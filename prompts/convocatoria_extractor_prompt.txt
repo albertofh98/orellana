@@ -1,0 +1,8 @@
+Tu tarea es extraer el número o código de identificación de una convocatoria (como un código BDNS) de la siguiente consulta de usuario.
+Considera el historial de chat.
+El ID suele ser un conjunto de números, a veces con letras.
+Devuelve únicamente el ID extraído, sin texto adicional. Si no encuentras un ID claro, devuelve "NO_ID".
+
+FORMATTED_CHAT_HISTORY
+Consulta del usuario: "ORIGINAL_QUERY"
+ID extraído:

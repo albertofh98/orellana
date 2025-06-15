@@ -1,0 +1,13 @@
+Tu tarea es extraer los años mencionados en la consulta del usuario. 
+Devuelve SÓLO un string con los años que solicite el usuario concatenados con ",". Si solo quiere consultar un año, devuelva sólo el año en particular.
+
+Ejemplos:
+- Consulta: "quiénes fueron los beneficiarios en 2023" -> "2023"
+- Consulta: "dame los beneficiarios de 2021 y 2022" -> "2021,2022"
+- Consulta: "hola buenos días" -> ""
+
+Historial de la conversación:
+FORMATTED_CHAT_HISTORY
+
+Consulta del usuario:
+ORIGINAL_QUERY

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Ayudas y Subvenciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Eliminada la siguiente línea de aquí, ya que se carga al final del body -->
+    <!-- <script src="{{ url_for('static', filename='js/main.js') }}"></script> -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-search me-2"></i>Buscador de Ayudas y Subvenciones
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#busqueda">Búsqueda Avanzada</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chat">Consulta por Chat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#ultimas">Últimas Convocatorias</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jumbotron bg-light p-4 rounded">
+                    <h1 class="display-5">Sistema Nacional de Ayudas y Subvenciones</h1>
+                    <p class="lead">Encuentra información sobre ayudas y subvenciones del gobierno de España utilizando búsqueda avanzada o consultas en lenguaje natural.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Chat -->
+        <div class="row mt-4" id="chat">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Consulta por Chat</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chat-container" id="chatMessages">
+                            <div class="message system">
+                                <div class="message-content">
+                                    Hola, soy tu asistente para buscar ayudas y subvenciones. Puedes preguntarme sobre convocatorias específicas o tipos de ayudas disponibles.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mt-3">
+                            <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu consulta aquí...">
+                            <button class="btn btn-primary" id="sendChat">
+                                <i class="bi bi-send"></i> Enviar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Búsqueda Avanzada -->
+        <div class="row mt-4" id="busqueda">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-search me-2"></i>Búsqueda Avanzada</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="searchForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="descripcion" class="form-label">Descripción o palabras clave</label>
+                                    <input type="text" class="form-control" id="descripcion" name="descripcion">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="descripcionTipoBusqueda" class="form-label">Tipo de búsqueda</label>
+                                    <select class="form-select" id="descripcionTipoBusqueda" name="descripcionTipoBusqueda">
+                                        <option value="1">Todas las palabras</option>
+                                        <option value="2">Alguna de las palabras</option>
+                                        <option value="0">Frase exacta</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaDesde" class="form-label">Fecha desde</label>
+                                    <input type="date" class="form-control" id="fechaDesde" name="fechaDesde">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaHasta" class="form-label">Fecha hasta</label>
+                                    <input type="date" class="form-control" id="fechaHasta" name="fechaHasta">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipoAdministracion" class="form-label">Tipo de administración</label>
+                                    <select class="form-select" id="tipoAdministracion" name="tipoAdministracion">
+                                        <option value="">Todas</option>
+                                        <option value="C">Administración del Estado</option>
+                                        <option value="A">Comunidad Autónoma</option>
+                                        <option value="L">Entidad Local</option>
+                                        <option value="O">Otros Organismos</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="numeroConvocatoria" class="form-label">Código BDNS (opcional)</label>
+                                    <input type="text" class="form-control" id="numeroConvocatoria" name="numeroConvocatoria">
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="reset" class="btn btn-secondary me-md-2">
+                                    <i class="bi bi-x-circle"></i> Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados de Búsqueda -->
+        <div class="row mt-4" id="resultadosContainer" style="display: none;">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Resultados de la Búsqueda</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="resultadosInfo" class="alert alert-info">
+                            Mostrando resultados...
+                        </div>
+                        <div id="resultadosList" class="list-group">
+                            <!-- Los resultados se cargarán aquí dinámicamente -->
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <nav aria-label="Paginación de resultados">
+                                <ul class="pagination" id="paginacion">
+                                    <!-- La paginación se generará dinámicamente -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimas Convocatorias -->
+        <div class="row mt-4 mb-4" id="ultimas">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Últimas Convocatorias</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="ultimasConvocatoriasList" class="list-group">
+                            <!-- Las últimas convocatorias se cargarán aquí dinámicamente -->
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para detalles de convocatoria -->
+    <div class="modal fade" id="convocatoriaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="convocatoriaModalTitle">Detalles de la Convocatoria</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="convocatoriaModalBody">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <div class="container">
+            <p class="mb-0">Buscador de Ayudas y Subvenciones © 2025 | Datos proporcionados por el Sistema Nacional de Publicidad de Subvenciones y Ayudas Públicas</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

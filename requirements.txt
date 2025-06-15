@@ -1,0 +1,47 @@
+annotated-types==0.7.0
+blinker==1.9.0
+cachetools==5.5.2
+certifi==2025.4.26
+charset-normalizer==3.4.2
+click==8.2.1
+Flask==3.1.1
+
+# --- Componentes de Google y gRPC ajustados para protobuf 4.x ---
+google-ai-generativelanguage==0.6.15 # Tu original, requiere protobuf < 5.0
+google-generativeai==0.8.5         # Tu original, depende de la línea anterior
+
+google-api-core~=2.15.0            # Compatible con protobuf 4.x y las versiones de google-auth de abajo
+google-api-python-client==2.170.0  # Manteniendo tu versión
+google-auth~=2.25.0                # Una versión que funciona bien con google-api-core 2.15 y protobuf 4.x
+google-auth-httplib2==0.2.0        # Manteniendo tu versión
+googleapis-common-protos~=1.62.0   # Compatible con protobuf 4.x
+grpcio~=1.59.0                     # DEGRADADO: Esta versión usa protobuf 4.x
+grpcio-status~=1.59.0              # DEGRADADO: Compatible con grpcio 1.59.x
+proto-plus~=1.23.0                 # Compatible con protobuf 4.x
+# protobuf - No fijar explícitamente, dejar que pip resuelva a una versión 4.x (ej. ~4.21.12) basada en otras dependencias
+
+httplib2==0.22.0
+idna==3.10
+itsdangerous==2.2.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
+pyasn1==0.6.1
+pyasn1_modules==0.4.2
+pydantic~=2.5.3 # Pydantic v2, compatible con langchain-core 0.1.x tardío / 0.2.x temprano
+pydantic_core~=2.14.6
+pyparsing==3.2.3
+python-dotenv==1.1.0
+requests==2.32.3
+rsa==4.9.1
+tqdm==4.67.1
+typing-inspection
+uritemplate==4.1.1
+urllib3>=1.26.0,<2.0 # urllib3 1.x es más seguro con dependencias más antiguas
+Werkzeug>=3.1.0     # Werkzeug 3.x es para Flask 3.x
+
+# --- Langchain, Langgraph ---
+# Intentando un conjunto de versiones que funcionaban bien juntas y con protobuf 4.x
+# a través de las dependencias de google-ai-generativelanguage 0.6.x
+langchain-core==0.1.52
+langgraph>=0.0.30,<0.1.0
+langchain_google_genai>=0.0.11,<2.0.2 # Versiones que usaban google-ai-generativelanguage 0.6.x

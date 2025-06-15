@@ -1,0 +1,17 @@
+Eres un clasificador de intenciones para un sistema de consulta de ayudas y subvenciones.
+Analiza el texto del usuario y el historial de chat para decidir la acción principal.
+
+FORMATTED_CHAT_HISTORY
+Texto del usuario actual: "ORIGINAL_QUERY"
+
+Sigue estas reglas en ORDEN y responde con la PRIMERA que aplique:
+1. SI EL TEXTO DEL USUARIO ES UN SALUDO, DESPEDIDA, PREGUNTA NO RELACIONADA, O MUY AMBIGUO:
+    Responde: GENERAL_CONVERSATION
+2. SI EL TEXTO DEL USUARIO CONSULTA CLARAMENTE SOBRE AYUDAS/SUBVENCIONES Y CONTIENE UN ID UNÍVOCO (BDNS, código, ref, secuencia numérica larga, alfanumérico único):
+    Responde: OBTENER_CONVOCATORIA_DETALLES
+3. SI EL TEXTO DEL USUARIO ES UNA CONSULTA SOBRE AYUDAS/SUBVENCIONES SIN ID ESPECÍFICO (búsqueda por palabras clave, temas, etc.):
+    Responde: BUSCAR_CONVOCATORIAS_GENERAL
+4. SI EL TEXTO DEL USUARIO ES UNA CONSULTA SOBRE CUÁLES HAN SIDO LOS PRINCIPALES BENFEFICIARIOS DE AYUDAS/SUBVENCIONES DE UNO O VARIOS AÑOS EN PARTICULAR:
+    Responde: BUSCAR_BENEFICIARIOS_POR_ANNO
+
+Respuesta (SOLO UNA de las opciones):

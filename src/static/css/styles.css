@@ -1,0 +1,182 @@
+/* Estilos generales para la aplicación */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Estilos para el chat */
+.chat-container {
+    height: 350px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+.message {
+    margin-bottom: 1rem;
+    max-width: 80%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+.message.user {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto;
+    border-top-right-radius: 0;
+}
+
+.message.system {
+    background-color: #e9ecef;
+    color: #212529;
+    margin-right: auto;
+    border-top-left-radius: 0;
+}
+
+.message-content {
+    word-wrap: break-word;
+}
+
+/* Estilos para los resultados de búsqueda */
+.convocatoria-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.convocatoria-item:hover {
+    background-color: #f1f8ff;
+    border-left: 4px solid #007bff;
+}
+
+.convocatoria-title {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.convocatoria-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.badge-administracion {
+    font-size: 0.75rem;
+}
+
+/* Estilos para la paginación */
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Estilos para los detalles de convocatoria */
+.convocatoria-detail-header {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.convocatoria-detail-section {
+    margin-bottom: 1.5rem;
+}
+
+.convocatoria-detail-section h5 {
+    color: #007bff;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+    .message {
+        max-width: 90%;
+    }
+    
+    .jumbotron h1 {
+        font-size: 1.75rem;
+    }
+    
+    .card-header h5 {
+        font-size: 1rem;
+    }
+}
+
+/* Animaciones */
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Spinner de carga */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* Estilos para notificaciones */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 350px;
+}
+
+/* Estilos para el botón de scroll arriba */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-top-btn:hover {
+    background-color: #0069d9;
+}
+
+/* En styles.css - ejemplos para mejorar tablas dentro del chat */
+.chat-container .message-content table {
+    width: 100%; /* Ocupar el ancho del mensaje */
+    margin-top: 1em;
+    margin-bottom: 1em;
+    border-collapse: collapse;
+    font-size: 0.9em; /* Ajustar tamaño si es necesario */
+}
+
+.chat-container .message-content th,
+.chat-container .message-content td {
+    border: 1px solid #dee2e6; /* Bordes como en Bootstrap */
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.chat-container .message-content th {
+    background-color: #f8f9fa; /* Un fondo ligero para cabeceras */
+}
+
+.chat-container .message-content ul,
+.chat-container .message-content ol {
+    padding-left: 20px; /* Mejorar indentación de listas */
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
