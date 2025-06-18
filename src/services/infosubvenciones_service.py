@@ -1,23 +1,21 @@
 import requests
 import logging
 
+
 class InfosubvencionesService:
     """
     Servicio para comunicarse con la API del Sistema Nacional de Ayudas y Subvenciones.
     """
-    
     def __init__(self):
         """Inicializa el servicio con la URL base de la API."""
         self.base_url = "https://www.infosubvenciones.es/bdnstrans/api"
         self.logger = logging.getLogger(__name__)
-    
+
     def buscar_convocatorias(self, params):
         """
         Busca convocatorias en la API utilizando los parámetros proporcionados.
-        
         Args:
             params (dict): Diccionario con los parámetros de búsqueda.
-            
         Returns:
             dict: Resultados de la búsqueda.
         """
@@ -30,14 +28,12 @@ class InfosubvencionesService:
         except requests.exceptions.RequestException as e:
             self.logger.error(f"Error al buscar convocatorias: {str(e)}")
             raise Exception(f"Error al comunicarse con la API de Infosubvenciones: {str(e)}")
-    
+
     def obtener_convocatoria(self, id_convocatoria):
         """
         Obtiene los detalles de una convocatoria específica.
-        
         Args:
             id_convocatoria (str): ID de la convocatoria a consultar.
-            
         Returns:
             dict: Detalles de la convocatoria.
         """
@@ -46,19 +42,16 @@ class InfosubvencionesService:
             params = {"numConv": id_convocatoria}
             response = requests.get(url, params=params)
             response.raise_for_status()
-            
             return response.json()
         except requests.exceptions.RequestException as e:
             self.logger.error(f"Error al obtener convocatoria {id_convocatoria}: {str(e)}")
             raise Exception(f"Error al obtener detalles de la convocatoria: {str(e)}")
-    
+
     def obtener_beneficiarios_por_anno(self, lista_annos):
         """
         Obtiene los beneficiarios dada una lista de años.
-        
         Args:
             lista_annos (list): Lista de años para consultar.
-            
         Returns:
             dict: Beneficiarios por año.
         """
@@ -72,5 +65,24 @@ class InfosubvencionesService:
         except requests.exceptions.RequestException as e:
             self.logger.error(f"Error al obtener beneficiarios por año: {str(e)}")
             raise Exception(f"Error al comunicarse con la API de Infosubvenciones: {str(e)}")
+
+    def buscar_partidos_politicos(self, params):
+        """
+        Busca partidos políticos en la API utilizando los parámetros proporcionados.
+        Args:
+            params (dict): Diccionario con los parámetros de búsqueda.
+        Returns:
+            dict: Resultados de la búsqueda de partidos políticos.
+        """
+        try:
+            url = f"{self.base_url}/partidospoliticos/busqueda"
+            self.logger.info(f"Buscando partidos políticos con parámetros: {params} y URL: {url}")
+            response = requests.get(url, params=params)
+            response.raise_for_status()  # Lanza excepción si hay error HTTP
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Error al buscar partidos políticos: {str(e)}")
+            raise Exception(f"Error al comunicarse con la API de Infosubvenciones: {str(e)}")
+
 
 info_subvenciones_service = InfosubvencionesService()

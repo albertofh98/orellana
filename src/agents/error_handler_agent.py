@@ -4,6 +4,7 @@ from src.services.graph_state import GraphState
 
 logger = logging.getLogger(__name__)
 
+
 class ErrorHandlerAgent:
     def handle_error(self, state: GraphState) -> dict:
         node_name = "handle_error_node"

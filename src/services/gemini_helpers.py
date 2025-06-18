@@ -3,9 +3,10 @@ import logging
 import json
 import os
 import re
-from typing import Iterable, Union, Dict, Any
+from typing import Iterable, Union, Any
 
 logger = logging.getLogger(__name__)
+
 
 def configure_gemini(api_key: str):
     """Configura la API de Gemini."""
@@ -13,10 +14,12 @@ def configure_gemini(api_key: str):
         raise ValueError("API key for Gemini is required and was not provided.")
     genai.configure(api_key=api_key)
 
+
 def get_gemini_model(model_name: str = None) -> genai.GenerativeModel:
     """Obtiene una instancia del modelo generativo de Gemini."""
     model_name = model_name or os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash-preview-05-20')
     return genai.GenerativeModel(model_name)
+
 
 def decode_gemini_stream(stream_response_iterable: Iterable[genai.types.GenerateContentResponse]) -> Iterable[str]:
     """
@@ -39,7 +42,8 @@ def decode_gemini_stream(stream_response_iterable: Iterable[genai.types.Generate
             break
         except Exception as e:
             logger.error(f"Error procesando chunk de Gemini en decode_gemini_stream: {e}", exc_info=True)
-            
+
+
 def generate_content_stream(model: genai.GenerativeModel, prompt_text: Union[str, list]) -> Iterable[str]:
     """Genera contenido como un stream (generador)."""
     try:
@@ -48,6 +52,7 @@ def generate_content_stream(model: genai.GenerativeModel, prompt_text: Union[str
     except Exception as e:
         logger.error(f"Error crítico al generar contenido STREAM con Gemini (Prompt: '{str(prompt_text)[:100]}...'): {str(e)}", exc_info=True)
         yield f"Error al generar contenido con el modelo (stream): {str(e)}"
+
 
 def generate_content_non_stream(model: genai.GenerativeModel, prompt_text: Union[str, list]) -> str:
     """
@@ -76,6 +81,7 @@ def generate_content_non_stream(model: genai.GenerativeModel, prompt_text: Union
         logger.error(f"Error crítico al generar contenido NON-STREAM con Gemini (Prompt: '{str(prompt_text)[:100]}...'): {str(e)}", exc_info=True)
         return f"ERROR_GEMINI_API_CALL_FAILED_NON_STREAM: {str(e)}"
 
+
 def _extract_json_str(text: str) -> Union[str, None]:
     """
     Función auxiliar que extrae una cadena con formato JSON del texto.
@@ -84,6 +90,7 @@ def _extract_json_str(text: str) -> Union[str, None]:
     if match:
         return match.group(1) if match.group(1) else match.group(2)
     return None
+
 
 def parse_json_from_text(text: str, default_if_error: Any = None) -> Any:
     """

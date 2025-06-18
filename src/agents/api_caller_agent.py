@@ -1,9 +1,9 @@
 import logging
-import json # Para logging
 from src.services.graph_state import GraphState
-# from src.services.infosubvenciones_service import info_subvenciones_service # Asumiendo que se pasa en __init__
+
 
 logger = logging.getLogger(__name__)
+
 
 class ApiCallerAgent:
     def __init__(self, infosubvenciones_service):
@@ -13,39 +13,40 @@ class ApiCallerAgent:
         # ... (código existente, se mantiene igual)
         node_name = "call_infosubvenciones_get_details_node"
         conv_id = state.get("extracted_convocatoria_id")
-        
+
         if not conv_id or conv_id == "NO_ID":
-            return {"error_message": "No se pudo identificar un ID de convocatoria válido en la consulta.", 
+            return {"error_message": "No se pudo identificar un ID de convocatoria válido en la consulta.",
                     "last_stream_event_node": node_name}
 
         try:
-            data = self.infosubvenciones_service.obtener_convocatoria(conv_id)            
+            data = self.infosubvenciones_service.obtener_convocatoria(conv_id)
             actual_item = None
-            # Caso 1: La API de detalle puede devolver el objeto directamente si no es parte de una búsqueda
-            # o una estructura con 'idConvocatoriaBDNS' u otro identificador único.
-            # Esta lógica puede necesitar ajuste basado en la respuesta real de obtener_convocatoria(id).
-            if isinstance(data, dict) and not ('content' in data or 'itemCount' in data): # Asumir que es el objeto de detalle
+            # Caso 1: La API de detalle puede devolver
+            # el objeto directamente si no es parte de una búsqueda
+            # o una estructura con 'idConvocatoriaBDNS'
+            # u otro identificador único.
+            # Esta lógica puede necesitar ajuste basado
+            # en la respuesta real de obtener_convocatoria(id).
+            if isinstance(data, dict) \
+                and not ('content' in data or 'itemCount' in data):
                 actual_item = data
-            # Caso 2: La API de detalle envuelve el resultado en una estructura similar a la de búsqueda
+            # Caso 2: La API de detalle envuelve el resultado
+            # en una estructura similar a la de búsqueda
             elif isinstance(data, dict) and 'content' in data:
                 if isinstance(data['content'], list) and data['content']:
-                    actual_item = data['content'][0] # Tomar el primer item
-            elif isinstance(data, list) and data: # Si devuelve una lista directamente (menos probable para un solo ID)
+                    actual_item = data['content'][0]
+            elif isinstance(data, list) and data:
                 actual_item = data[0]
 
-
             if actual_item is None:
-                logger.warning(f"{node_name}: No se pudo extraer un item de detalle válido de la respuesta de API para ID '{conv_id}'. Respuesta: {str(data)[:200]}")
-                # Devolver la 'data' original para que el generador pueda decir que no se encontró nada específico si lo desea.
-                return {"error_message": f"No se encontraron detalles claros para la convocatoria ID '{conv_id}'.", 
-                        "api_response_data": data, # Es importante pasar la respuesta original
+                return {"error_message": f"No se encontraron detalles claros para el ID '{conv_id}'.",
+                        "api_response_data": data,
                         "last_stream_event_node": node_name}
 
-            return {"api_response_data": actual_item, "last_stream_event_node": node_name} 
+            return {"api_response_data": actual_item, "last_stream_event_node": node_name}
 
-        except Exception as e:
-            logger.error(f"{node_name}: Error en API get_details para ID '{conv_id}': {e}", exc_info=True)
-            return {"error_message": f"Error de API al obtener detalles para ID '{conv_id}': {e}", 
+        except IndexError as e:
+            return {"error_message": f"Error de API al obtener detalles para ID '{conv_id}': {e}",
                     "last_stream_event_node": node_name}
 
     def search(self, state: GraphState) -> dict:
@@ -53,62 +54,55 @@ class ApiCallerAgent:
         params = state.get("api_call_params")
 
         if not params:
-            logger.warning(f"{node_name}: Faltan parámetros de búsqueda válidos.")
             return {
-                "error_message": "No se pudieron determinar los parámetros para realizar la búsqueda.",
-                "api_response_data": {"itemCount": 0, "content": [], "totalElements": 0}, # Simular respuesta vacía
+                "error_message": "No se pudieron determinar \
+                    los parámetros para realizar la búsqueda.",
+                "api_response_data": {"itemCount": 0,
+                                      "content": [],
+                                      "totalElements": 0},
                 "last_stream_event_node": node_name
             }
 
         try:
             data = self.infosubvenciones_service.buscar_convocatorias(params)
-            
-            item_count_on_page = 0
             total_elements_available = 0
 
             if isinstance(data, dict):
-                # La forma más fiable de saber cuántos items hay en la página actual es len(data.get('content', []))
-                current_page_content = data.get('content', [])
-                if isinstance(current_page_content, list):
-                    item_count_on_page = len(current_page_content)
-                
-                # La API de InfoSubvenciones suele tener un campo como 'totalElements' para el total global
-                total_elements_available = data.get('totalElements', 0) 
-                
-                # Para la lógica del prompt, 'itemCount' debería reflejar el total de elementos encontrados,
-                # no solo los de la página actual, para dar una idea completa.
-                # Si 'totalElements' está disponible, usarlo. Si no, usar los de la página actual.
-                # El prompt usa NUM_ITEMS que se reemplaza por 'itemCount' que pongamos en api_response_data.
-                # Así que vamos a asegurar que 'itemCount' en 'api_response_data' sea el total.
-                
-                # Actualizar o añadir 'itemCount' en la 'data' que pasamos para que refleje el total
-                data['itemCount'] = total_elements_available # Usar totalElements como el itemCount principal
-                                
-            else: # Si la data no es un diccionario, no podemos determinar el count
-                logger.warning(f"{node_name}: La respuesta de la API de búsqueda no fue un diccionario. Data: {str(data)[:200]}")
-                # Devolver como si no hubiera resultados
+                total_elements_available = data.get('totalElements', 0)
+                # Para la lógica del prompt, 'itemCount'
+                # debería reflejar el total de elementos encontrados,
+                # no solo los de la página actual,
+                # para dar una idea completa.
+                # Si 'totalElements' está disponible, usarlo.
+                # Si no, usar los de la página actual.
+                # El prompt usa NUM_ITEMS que se reemplaza por
+                # 'itemCount' que pongamos en api_response_data.
+                # Así que vamos a asegurar que 'itemCount' en
+                # 'api_response_data' sea el total.
+                data['itemCount'] = total_elements_available
+            else:
                 return {
-                    "api_response_data": {"itemCount": 0, "content": [], "totalElements": 0, "error": "Respuesta API no es un diccionario"},
+                    "api_response_data": {"itemCount": 0, "content": [],
+                                          "totalElements": 0,
+                                          "error": "Respuesta API no es un diccionario"},
                     "last_stream_event_node": node_name
                 }
 
-
-            if total_elements_available == 0: # Si el total de elementos es 0
+            if total_elements_available == 0:
                 return {
-                    "api_response_data": data, # data ya tiene itemCount = 0 (o totalElements = 0)
+                    "api_response_data": data,
                     "last_stream_event_node": node_name
                 }
-            
-            # 'data' ya ha sido modificada para incluir 'itemCount' = total_elements_available
             return {
-                "api_response_data": data, 
+                "api_response_data": data,
                 "last_stream_event_node": node_name
             }
 
-        except Exception as e:
-            logger.error(f"{node_name}: Error en API search con params {params}: {e}", exc_info=True)
+        except IndexError as e:
             return {
-                "error_message": f"Error de API al buscar convocatorias: {e}", 
-                "api_response_data": {"itemCount": 0, "content": [], "totalElements": 0, "error": str(e)}, 
-                "last_stream_event_node": node_name
-            }
+                "error_message": f"Error de API al buscar convocatorias: {e}",
+                "api_response_data": {"itemCount": 0,
+                                      "content": [],
+                                      "totalElements": 0,
+                                      "error": str(e)},
+                "last_stream_event_node": node_name}
