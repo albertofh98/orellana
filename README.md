@@ -1,6 +1,10 @@
-# Buscador de Subvenciones
+# Buscador de Subvenciones (Orellana)
 
-Este proyecto es una **aplicación web** de chat conversacional para buscar información sobre subvenciones (convocatorias, beneficiarios, etc.) en España usando servicios de IA y una arquitectura basada en grafos.
+<div style="text-align: center;">
+  <img src="media/logo.png" alt="alt text" style="width: 350px;" />
+</div>
+
+Orellana es una **aplicación web** de chat conversacional para buscar información sobre subvenciones (convocatorias, beneficiarios, etc.) en España usando servicios de IA y una arquitectura basada en grafos.
 
 ## 📋 Descripción
 
