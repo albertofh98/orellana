@@ -5,7 +5,8 @@ Contiene las funciones de enrutamiento condicional y la función principal
 para construir el grafo que orquesta a los agentes.
 """
 import logging
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END
+from langgraph.graph.state import StateGraph
 from services.graph_state import GraphState
 
 logger = logging.getLogger(__name__)
