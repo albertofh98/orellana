@@ -18,9 +18,9 @@ project_root = os.path.dirname(current_dir)
 sys.path.insert(0, project_root)
 
 # pylint: disable=import-error,wrong-import-position
-from src.services.gemini_helpers import configure_gemini
-from src.services.infosubvenciones_service import info_subvenciones_service
-from src.services.langgraph_service import LangGraphService
+from services.gemini_helpers import configure_gemini
+from services.infosubvenciones_service import info_subvenciones_service
+from services.langgraph_service import LangGraphService
 
 # Cargar variables de entorno desde .env
 load_dotenv()
@@ -33,7 +33,7 @@ app.logger.setLevel(logging.INFO)
 
 # Inicialización de servicios
 gemini_api_key = os.getenv('GEMINI_API_KEY')
-langgraph_agent_instance = None
+langgraph_agent_instance = None  # pylint: disable=invalid-name
 
 if gemini_api_key:
     try:

@@ -6,7 +6,7 @@ para construir el grafo que orquesta a los agentes.
 """
 import logging
 from langgraph.graph import StateGraph, END
-from src.services.graph_state import GraphState
+from services.graph_state import GraphState
 
 logger = logging.getLogger(__name__)
 

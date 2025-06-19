@@ -6,11 +6,12 @@ traducirlos a mensajes amigables para el usuario y finalizar el flujo
 de manera controlada.
 """
 import logging
-from src.services.graph_state import GraphState
+from services.graph_state import GraphState
 
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=too-few-public-methods
 class ErrorHandlerAgent:
     """
     Agente encargado de gestionar los errores producidos durante la ejecución del grafo.

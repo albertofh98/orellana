@@ -8,18 +8,18 @@ import logging
 import os
 from typing import List, Tuple, Optional, Any
 from langgraph.checkpoint.memory import MemorySaver
-from src.services.graph_state import GraphState
-from src.services.infosubvenciones_service import info_subvenciones_service
-from src.services.gemini_helpers import (get_gemini_model,
-                                         generate_content_non_stream,
-                                         generate_content_stream)
-from src.agents.extractor_agent import ExtractorAgent
-from src.agents.api_caller_agent import ApiCallerAgent
-from src.agents.generator_agent import GeneratorAgent
-from src.agents.error_handler_agent import ErrorHandlerAgent
-from src.agents.beneficiaries_agent import BeneficiariesAgent
-from src.agents.political_parties_agent import PoliticalPartiesAgent
-from src.graph.graph import build_agent_graph
+from agents.extractor_agent import ExtractorAgent
+from agents.api_caller_agent import ApiCallerAgent
+from agents.generator_agent import GeneratorAgent
+from agents.error_handler_agent import ErrorHandlerAgent
+from agents.beneficiaries_agent import BeneficiariesAgent
+from agents.political_parties_agent import PoliticalPartiesAgent
+from graph.graph import build_agent_graph
+from .graph_state import GraphState
+from .infosubvenciones_service import info_subvenciones_service
+from .gemini_helpers import (get_gemini_model,
+                           generate_content_non_stream,
+                           generate_content_stream)
 
 logger = logging.getLogger(__name__)
 

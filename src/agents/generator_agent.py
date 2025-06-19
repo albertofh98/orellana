@@ -5,7 +5,7 @@ el estado del grafo.
 """
 import logging
 import json
-from src.services.graph_state import GraphState
+from services.graph_state import GraphState
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +23,9 @@ class GeneratorAgent:
         self._call_llm_non_stream = llm_helper_non_stream
         self._call_llm_stream = llm_helper_stream
 
-    # pylint: disable=too-many-arguments
     def _prepare_response_state(self, state: GraphState, prompt_key: str,
                                 node_name: str, replacements: dict,
-                                is_streamable: bool = True) -> dict:
+                                *,is_streamable : bool = True) -> dict:
         """
         Prepara el estado para la generación de una respuesta, ya sea en streaming o no.
         """

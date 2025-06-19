@@ -4,8 +4,8 @@ para extraer información clave como la intención, identificadores,
 parámetros de búsqueda y otros datos relevantes utilizando un modelo de lenguaje.
 """
 import logging
-from src.services.graph_state import GraphState
-from src.services.gemini_helpers import (
+from services.graph_state import GraphState
+from services.gemini_helpers import (
     generate_content_non_stream,
     parse_json_from_text,
 )

@@ -4,8 +4,8 @@ con el servicio de subvenciones para buscar información sobre partidos polític
 """
 import logging
 import json
-from src.services.graph_state import GraphState
-from src.services.infosubvenciones_service import info_subvenciones_service
+from services.graph_state import GraphState
+from services.infosubvenciones_service import info_subvenciones_service
 
 logger = logging.getLogger(__name__)
 

@@ -6,13 +6,14 @@ listas de beneficiarios basadas en uno o varios años proporcionados.
 """
 import logging
 import json
-from src.services.graph_state import GraphState
-from src.services.infosubvenciones_service import info_subvenciones_service
+from services.graph_state import GraphState
+from services.infosubvenciones_service import info_subvenciones_service
 
 
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=too-few-public-methods
 class BeneficiariesAgent:
     """
     Agente para gestionar la obtención de datos de beneficiarios de subvenciones.
