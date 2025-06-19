@@ -144,7 +144,7 @@ class ExtractorAgent:
         api_params, error_msg = None, None
 
         if not parsed_json:
-            error_msg = ("No se pudieron determinar parámetros de búsqueda válidos.")
+            error_msg = "No se pudieron determinar parámetros de búsqueda válidos."
             logger.warning("%s: %s (LLM output: '%s')",
                          node_name, error_msg, params_text)
         else:

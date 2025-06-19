@@ -4,12 +4,13 @@ de Google Gemini. Incluye configuración, obtención de modelos y métodos
 para generar contenido en modo streaming y no-streaming, así como para
 parsear JSON de las respuestas del modelo.
 """
-import google.generativeai as genai
 import logging
 import json
 import os
 import re
 from typing import Iterable, Union, Any
+import google.generativeai as genai
+
 
 logger = logging.getLogger(__name__)
 
