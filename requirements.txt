@@ -35,7 +35,7 @@ rsa==4.9.1
 tqdm==4.67.1
 uritemplate==4.1.1
 urllib3>=1.26.0,<2.0 # urllib3 1.x es más seguro con dependencias más antiguas
-Werkzeug>=3.1.0     # Werkzeug 3.x es para Flask 3.x
+Werkzeug
 
 # --- Langchain, Langgraph ---
 # Intentando un conjunto de versiones que funcionaban bien juntas y con protobuf 4.x
