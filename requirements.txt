@@ -7,7 +7,7 @@ Flask<3.1.1
 
 # --- Componentes de Google y gRPC ajustados para protobuf 4.x ---
 google-ai-generativelanguage==0.6.15 # Tu original, requiere protobuf < 5.0
-google-generativeai<0.8.5         # Tu original, depende de la línea anterior
+google-generativeai         # Tu original, depende de la línea anterior
 
 google-api-core~=2.15.0            # Compatible con protobuf 4.x y las versiones de google-auth de abajo
 google-api-python-client==2.170.0  # Manteniendo tu versión
@@ -46,6 +46,5 @@ langgraph>=0.0.47,<0.1.0
 langchain_google_genai>=0.0.11,<2.0.2 # Versiones que usaban google-ai-generativelanguage 0.6.x
 pytest
 requests
-google-generativeai
 Flask
 dotenv
