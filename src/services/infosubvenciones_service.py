@@ -31,7 +31,7 @@ class InfosubvencionesService:
             url = f"{self.base_url}/convocatorias/busqueda"
             self.logger.info("Buscando convocatorias con params: %s y URL: %s",
                              params, url)
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()  # Lanza excepción si hay error HTTP
             return response.json()
         except requests.exceptions.RequestException as e:
@@ -50,7 +50,7 @@ class InfosubvencionesService:
         try:
             url = f"{self.base_url}/convocatorias"
             params = {"numConv": id_convocatoria}
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
@@ -72,7 +72,7 @@ class InfosubvencionesService:
             params = {"anios": list(map(int, lista_annos))}
             self.logger.info("Obteniendo beneficiarios para años: %s con URL: %s",
                              lista_annos, url)
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
@@ -94,7 +94,7 @@ class InfosubvencionesService:
                 "Buscando partidos políticos con params: %s y URL: %s",
                 params, url
             )
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()  # Lanza excepción si hay error HTTP
             return response.json()
         except requests.exceptions.RequestException as e:
