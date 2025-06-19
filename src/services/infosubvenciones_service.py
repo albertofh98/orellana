@@ -1,5 +1,13 @@
-import requests
+"""
+Este módulo proporciona un servicio para interactuar con la API del
+Sistema Nacional de Ayudas y Subvenciones de España.
+"""
 import logging
+import requests
+
+
+class ApiServiceError(Exception):
+    """Excepción personalizada para errores ocurridos en el servicio de la API."""
 
 
 class InfosubvencionesService:
@@ -21,13 +29,15 @@ class InfosubvencionesService:
         """
         try:
             url = f"{self.base_url}/convocatorias/busqueda"
-            self.logger.info(f"Buscando convocatorias con parámetros: {params} y URL: {url}")
+            self.logger.info("Buscando convocatorias con params: %s y URL: %s",
+                             params, url)
             response = requests.get(url, params=params)
             response.raise_for_status()  # Lanza excepción si hay error HTTP
             return response.json()
         except requests.exceptions.RequestException as e:
-            self.logger.error(f"Error al buscar convocatorias: {str(e)}")
-            raise Exception(f"Error al comunicarse con la API de Infosubvenciones: {str(e)}")
+            msg = f"Error al comunicarse con la API de Infosubvenciones: {str(e)}"
+            self.logger.error("Error al buscar convocatorias: %s", str(e))
+            raise ApiServiceError(msg) from e
 
     def obtener_convocatoria(self, id_convocatoria):
         """
@@ -44,8 +54,10 @@ class InfosubvencionesService:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            self.logger.error(f"Error al obtener convocatoria {id_convocatoria}: {str(e)}")
-            raise Exception(f"Error al obtener detalles de la convocatoria: {str(e)}")
+            msg = f"Error al obtener detalles de la convocatoria: {str(e)}"
+            self.logger.error("Error al obtener convocatoria %s: %s",
+                              id_convocatoria, str(e))
+            raise ApiServiceError(msg) from e
 
     def obtener_beneficiarios_por_anno(self, lista_annos):
         """
@@ -58,13 +70,15 @@ class InfosubvencionesService:
         try:
             url = f"{self.base_url}/grandesbeneficiarios/busqueda"
             params = {"anios": list(map(int, lista_annos))}
-            self.logger.info(f"Obteniendo beneficiarios para años: {lista_annos} con URL: {url}")
+            self.logger.info("Obteniendo beneficiarios para años: %s con URL: %s",
+                             lista_annos, url)
             response = requests.get(url, params=params)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            self.logger.error(f"Error al obtener beneficiarios por año: {str(e)}")
-            raise Exception(f"Error al comunicarse con la API de Infosubvenciones: {str(e)}")
+            msg = f"Error al comunicarse con la API de Infosubvenciones: {str(e)}"
+            self.logger.error("Error al obtener beneficiarios por año: %s", str(e))
+            raise ApiServiceError(msg) from e
 
     def buscar_partidos_politicos(self, params):
         """
@@ -76,13 +90,17 @@ class InfosubvencionesService:
         """
         try:
             url = f"{self.base_url}/partidospoliticos/busqueda"
-            self.logger.info(f"Buscando partidos políticos con parámetros: {params} y URL: {url}")
+            self.logger.info(
+                "Buscando partidos políticos con params: %s y URL: %s",
+                params, url
+            )
             response = requests.get(url, params=params)
             response.raise_for_status()  # Lanza excepción si hay error HTTP
             return response.json()
         except requests.exceptions.RequestException as e:
-            self.logger.error(f"Error al buscar partidos políticos: {str(e)}")
-            raise Exception(f"Error al comunicarse con la API de Infosubvenciones: {str(e)}")
+            msg = f"Error al comunicarse con la API de Infosubvenciones: {str(e)}"
+            self.logger.error("Error al buscar partidos políticos: %s", str(e))
+            raise ApiServiceError(msg) from e
 
 
 info_subvenciones_service = InfosubvencionesService()

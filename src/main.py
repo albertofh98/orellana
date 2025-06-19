@@ -1,6 +1,3 @@
-from src.services.gemini_helpers import configure_gemini
-from src.services.langgraph_service import LangGraphService
-from src.services.infosubvenciones_service import info_subvenciones_service
 from flask import Flask, render_template, request, jsonify, Response, g, stream_with_context
 from collections.abc import Iterable
 from dotenv import load_dotenv
@@ -9,6 +6,9 @@ import uuid
 import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.services.gemini_helpers import configure_gemini
+from src.services.langgraph_service import LangGraphService
+from src.services.infosubvenciones_service import info_subvenciones_service
 
 # Load environment variables
 load_dotenv()

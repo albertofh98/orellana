@@ -1,7 +1,19 @@
+"""
+Define la estructura de datos para el estado del grafo de LangGraph.
+
+Este módulo contiene la definición de `GraphState`, un TypedDict que
+se utiliza para pasar información entre los diferentes nodos del grafo.
+"""
 from typing import TypedDict, Optional, Any, List, Tuple
 
 
 class GraphState(TypedDict):
+    """
+    Representa el estado compartido a lo largo de la ejecución del grafo.
+
+    Cada campo almacena una pieza de información que los agentes pueden
+    leer o escribir para comunicarse y tomar decisiones.
+    """
     original_query: str
     chat_history: List[Tuple[str, str]]
     formatted_chat_history: str
