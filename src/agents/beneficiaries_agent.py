@@ -28,7 +28,7 @@ class BeneficiariesAgent:
         self.infosubvenciones_service = info_subvenciones_service
         self.node_name = "get_beneficiaries_node"
 
-    def _parse_years(self, extracted_years_str: str | None) -> list[int] | None:
+    def _parse_years(self, extracted_years_str: str) -> list[int]:
         """
         Parsea la cadena de años extraída y la convierte en una lista de enteros.
         """
