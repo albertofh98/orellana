@@ -41,7 +41,7 @@ if gemini_api_key:
         configure_gemini(api_key=gemini_api_key)
         langgraph_agent_instance = LangGraphService(api_key=gemini_api_key)
         app.logger.info("LangGraphAgent inicializado correctamente.")
-    except Exception as e:
+    except IndexError as e:
         app.logger.error("Error al inicializar LangGraphAgent: %s", e, exc_info=True)
 else:
     app.logger.warning(
@@ -90,7 +90,7 @@ def buscar_convocatorias_api():
     try:
         resultados = info_subvenciones_service.buscar_convocatorias(params)
         return jsonify(resultados)
-    except Exception as e:
+    except IndexError as e:
         return jsonify({'error': str(e)}), 500
 
 
@@ -100,7 +100,7 @@ def obtener_convocatoria_api(id_conv):
     try:
         convocatoria = info_subvenciones_service.obtener_convocatoria(id_conv)
         return jsonify(convocatoria)
-    except Exception as e:
+    except IndexError as e:
         app.logger.error("Error en /api/convocatoria/%s: %s", id_conv, e)
         return jsonify({'error': str(e)}), 500
 
@@ -159,7 +159,7 @@ def procesar_chat():
                     for chunk in ai_response:
                         full_response_chunks.append(chunk)
                         yield chunk
-                except Exception as e:
+                except IndexError as e:
                     app.logger.error("Error durante el streaming: %s", e, exc_info=True)
                     yield " Lo siento, ha ocurrido un error al generar la respuesta."
                 finally:
@@ -194,7 +194,7 @@ def procesar_chat():
             mimetype='text/plain', status=500
         )
 
-    except Exception as e:
+    except IndexError as e:
         app.logger.error("Error crítico en /api/chat: %s", e, exc_info=True)
         error_response = (
             "Ocurrió un error interno al procesar tu consulta. "
