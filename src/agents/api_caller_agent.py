@@ -2,7 +2,7 @@
 Este módulo define el agente encargado de realizar llamadas a la API de InfoSubvenciones.
 """
 import logging
-from src.services.graph_state import GraphState
+from services.graph_state import GraphState
 
 
 logger = logging.getLogger(__name__)

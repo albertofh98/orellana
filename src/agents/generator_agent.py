@@ -24,8 +24,7 @@ class GeneratorAgent:
         self._call_llm_stream = llm_helper_stream
 
     def _prepare_response_state(self, state: GraphState, prompt_key: str,
-                                node_name: str, replacements: dict,
-                                *,is_streamable : bool = True) -> dict:
+                                node_name: str, replacements: dict) -> dict:
         """
         Prepara el estado para la generación de una respuesta, ya sea en streaming o no.
         """
@@ -34,25 +33,13 @@ class GeneratorAgent:
         for key, value in replacements.items():
             prompt_text = prompt_text.replace(key, str(value))
 
-        if is_streamable:
-            return {
-                "stream_generation_prompt": prompt_text,
-                "stream_generation_node_name": node_name,
-                "agent_response_text": None,
-                "stream_completed_successfully": True,
-                "error_message": state.get("error_message"),
-                "last_stream_event_node": node_name
-            }
-
-        text, success, err = self._call_llm_non_stream(
-            self._model, prompt_text, node_name
-        )
         return {
-            "agent_response_text": text,
-            "stream_completed_successfully": success,
-            "error_message": err or state.get("error_message"),
-            "last_stream_event_node": node_name,
-            "stream_generation_prompt": None
+            "stream_generation_prompt": prompt_text,
+            "stream_generation_node_name": node_name,
+            "agent_response_text": None,
+            "stream_completed_successfully": True,
+            "error_message": state.get("error_message"),
+            "last_stream_event_node": node_name
         }
 
     def generate_detailed_response(self, state: GraphState) -> dict:

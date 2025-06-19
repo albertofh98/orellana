@@ -3,7 +3,6 @@ blinker==1.9.0
 cachetools==5.5.2
 certifi==2025.4.26
 charset-normalizer==3.4.2
-click==8.2.1
 Flask==3.1.1
 
 # --- Componentes de Google y gRPC ajustados para protobuf 4.x ---
@@ -43,7 +42,7 @@ Werkzeug>=3.1.0     # Werkzeug 3.x es para Flask 3.x
 # Intentando un conjunto de versiones que funcionaban bien juntas y con protobuf 4.x
 # a través de las dependencias de google-ai-generativelanguage 0.6.x
 langchain-core==0.1.52
-langgraph>=0.0.30,<0.1.0
+langgraph==0.4.7
 langchain_google_genai>=0.0.11,<2.0.2 # Versiones que usaban google-ai-generativelanguage 0.6.x
 pytest
 requests
