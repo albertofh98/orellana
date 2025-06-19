@@ -3,7 +3,7 @@ blinker==1.8.2
 cachetools==5.5.2
 certifi==2025.4.26
 charset-normalizer==3.4.2
-Flask==3.1.1
+Flask<3.1.1
 
 # --- Componentes de Google y gRPC ajustados para protobuf 4.x ---
 google-ai-generativelanguage==0.6.15 # Tu original, requiere protobuf < 5.0
