@@ -45,3 +45,4 @@ Werkzeug>=3.1.0     # Werkzeug 3.x es para Flask 3.x
 langchain-core==0.1.52
 langgraph>=0.0.30,<0.1.0
 langchain_google_genai>=0.0.11,<2.0.2 # Versiones que usaban google-ai-generativelanguage 0.6.x
+pytest
