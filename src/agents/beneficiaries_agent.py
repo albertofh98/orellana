@@ -6,6 +6,7 @@ listas de beneficiarios basadas en uno o varios años proporcionados.
 """
 import logging
 import json
+from typing import Any
 from services.graph_state import GraphState
 from services.infosubvenciones_service import info_subvenciones_service
 
@@ -82,7 +83,7 @@ class BeneficiariesAgent:
                 self.node_name, item_year_field, item
             )
 
-    def _process_api_response(self, response: list | dict, api_data: dict):
+    def _process_api_response(self, response: Any, api_data: dict):
         """Procesa la respuesta completa de la API, ya sea una lista o un diccionario."""
         beneficiaries_list = []
         if isinstance(response, dict) and 'content' in response:
