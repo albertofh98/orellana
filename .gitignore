@@ -1,3 +1,5 @@
 .env
+.flake8
+__pycache__/
 *.pyc
 *.pyo
