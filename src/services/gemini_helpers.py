@@ -10,6 +10,9 @@ import os
 import re
 from typing import Iterable, Union, Any
 import google.generativeai as genai
+from opik import track
+from dotenv import load_dotenv
+load_dotenv()
 
 
 logger = logging.getLogger(__name__)
@@ -29,13 +32,16 @@ def get_gemini_model(model_name: str = None) -> genai.GenerativeModel:
     )
     return genai.GenerativeModel(model_name)
 
-
+@track
 def decode_gemini_stream(
+    prompt_text: Union[str, list],
     stream_response_iterable: Iterable[genai.types.GenerateContentResponse]
 ) -> Iterable[str]:
     """
     Decodifica un stream de Gemini y produce los chunks de texto.
     """
+    logger.info("Question: %s", str(prompt_text))
+    final_response = ''
     for response_chunk in stream_response_iterable:
         try:
             if response_chunk.candidates:
@@ -43,6 +49,7 @@ def decode_gemini_stream(
                 if candidate.content and candidate.content.parts:
                     text_part = candidate.content.parts[0].text
                     if text_part:
+                        final_response += text_part
                         yield text_part
                 else:
                     logger.info("Chunk sin 'parts', posiblemente final del stream.")
@@ -57,6 +64,7 @@ def decode_gemini_stream(
                 "Error procesando chunk de Gemini en decode_gemini_stream: %s",
                 e, exc_info=True
             )
+    return final_response
 
 
 def generate_content_stream(
@@ -65,7 +73,7 @@ def generate_content_stream(
     """Genera contenido como un stream (generador)."""
     try:
         response_iterable = model.generate_content(prompt_text, stream=True)
-        yield from decode_gemini_stream(response_iterable)
+        yield from decode_gemini_stream(prompt_text, response_iterable)
     # pylint: disable=broad-exception-caught
     except Exception as e:
         logger.error(

@@ -1,37 +1,96 @@
+/* Importar la fuente Inter (colocar al inicio del CSS o en el <head> del HTML) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 /* Estilos generales para la aplicación */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
+    /* Nueva fuente principal con fallbacks */
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Mantenemos el fondo de tus custom tweaks, es moderno */
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    color: #212529; /* Color de texto principal por defecto */
 }
+
+/* Estilos para el título principal de la página y su subtítulo */
+/* Asumiendo que el título "Sistema Nacional..." es un h1 */
+h1.page-main-title { /* O usa el selector que tengas para este título */
+    font-weight: 700; /* Bold */
+    color: #212529; /* Gris oscuro */
+    font-size: 2.25rem; /* Ajusta según sea necesario */
+    margin-bottom: 0.5rem;
+}
+
+p.page-subtitle { /* O usa el selector para el subtítulo */
+    font-weight: 400; /* Regular */
+    color: #6c757d; /* Gris medio */
+    font-size: 1.1rem; /* Ajusta según sea necesario */
+    margin-bottom: 2rem;
+}
+
+/* Estilos para la cabecera superior (navbar) */
+.navbar {
+    background-color: #2C3E50 !important; /* Ejemplo: Azul Pizarra */
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.08);
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link {
+    color: #FFFFFF !important;
+    font-weight: 500;
+}
+.navbar .nav-link:hover {
+    color: #e0e0e0 !important;
+}
+
+/* Estilo para la barra azul "Consulta por Chat" sobre el chat-container */
+.chat-widget-header {
+    background-color: #6c757d;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.chat-widget-header i { /* Si usas un icono de fuente */
+    margin-right: 0.5rem;
+}
+
 
 /* Estilos para el chat */
 .chat-container {
-    height: 350px;
+    height: 350px; /* O el alto deseado */
     overflow-y: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
+    border: 1px solid #dee2e6; /* Borde sutil */
+    /* El border-radius de la pestaña/header ya está arriba, si es un solo componente, se ajusta */
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: #FFFFFF; /* Fondo blanco para el área de mensajes para buen contraste */
 }
 
 .message {
     margin-bottom: 1rem;
     max-width: 80%;
-    padding: 0.75rem;
+    padding: 0.75rem 1rem; /* Ajuste ligero de padding */
     border-radius: 0.5rem;
     position: relative;
+    font-size: 0.95rem; /* Tamaño de fuente para mensajes */
+    line-height: 1.5;
 }
 
 .message.user {
-    background-color: #007bff;
+    background-color: #6c757d; /* Azul de acento */
     color: white;
     margin-left: auto;
     border-top-right-radius: 0;
 }
 
 .message.system {
-    background-color: #e9ecef;
-    color: #212529;
+    background-color: #F1F3F5; /* Gris muy claro para burbuja del sistema */
+    color: #333333; /* Texto gris oscuro para burbuja del sistema */
     margin-right: auto;
     border-top-left-radius: 0;
 }
@@ -40,67 +99,106 @@ body {
     word-wrap: break-word;
 }
 
+/* Placeholder para inputs */
+input::placeholder,
+textarea::placeholder {
+    color: #888888; /* Gris claro para placeholder */
+    font-style: italic;
+    font-weight: 400; /* Regular */
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+    border: 1px solid #CED4DA; /* Borde sutil estándar para inputs */
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Asegurar fuente */
+}
+input[type="text"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+    border-color: #6c757d;
+    box-shadow: 0 0 0 0.2rem #6c757d;
+}
+
+
 /* Estilos para los resultados de búsqueda */
 .convocatoria-item {
     transition: all 0.3s ease;
     border-left: 4px solid transparent;
+    padding: 1rem; /* Añadir padding para mejor espaciado */
 }
 
 .convocatoria-item:hover {
-    background-color: #f1f8ff;
-    border-left: 4px solid #007bff;
+    background-color: #e9f5ff; /* Un azul muy claro para hover */
+    border-left: 4px solid #6c757d; /* Azul de acento */
 }
 
 .convocatoria-title {
-    font-weight: 600;
-    color: #007bff;
+    font-weight: 600; /* Semi-Bold */
+    color: #6c757d; /* Un azul un poco más oscuro para links, o mantener #007bff */
+    font-size: 1.1rem;
 }
 
 .convocatoria-meta {
-    font-size: 0.85rem;
-    color: #6c757d;
+    font-size: 0.9rem; /* Ligeramente más grande para legibilidad */
+    color: #555555; /* Un gris un poco más oscuro que #6c757d */
 }
 
 .badge-administracion {
-    font-size: 0.75rem;
+    font-size: 0.8rem; /* Ligeramente más grande */
+    font-weight: 500; /* Medium */
 }
 
 /* Estilos para la paginación */
 .pagination .page-item.active .page-link {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    font-weight: 600; /* Semi-Bold */
 }
+.pagination .page-link {
+    color: #6c757d; /* Color para links de paginación no activos */
+}
+.pagination .page-link:hover {
+    color: #6c757d;
+}
+
 
 /* Estilos para los detalles de convocatoria */
 .convocatoria-detail-header {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    margin-bottom: 1rem;
+    background-color: #FFFFFF; /* Fondo blanco */
+    padding: 1.5rem; /* Más padding */
+    border-radius: 0.35rem; /* Radio ligeramente mayor */
+    margin-bottom: 1.5rem;
+    border: 1px solid #dee2e6;
 }
 
 .convocatoria-detail-section {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .convocatoria-detail-section h5 {
-    color: #007bff;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    color: #6c757d; /* Azul más oscuro para títulos de sección */
+    border-bottom: 2px solid #6c757d; /* Borde más prominente */
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
+    font-weight: 600; /* Semi-Bold */
+    font-size: 1.2rem;
 }
 
 /* Estilos para dispositivos móviles */
 @media (max-width: 768px) {
     .message {
         max-width: 90%;
+        font-size: 0.9rem;
+    }
+    .jumbotron h1, h1.page-main-title {
+        font-size: 1.75rem; 
+    }
+    p.page-subtitle {
+        font-size: 1rem;
     }
     
-    .jumbotron h1 {
-        font-size: 1.75rem;
-    }
-    
-    .card-header h5 {
+    .card-header h5, .chat-widget-header { /* Si el chat header es h5 en card-header */
         font-size: 1rem;
     }
 }
@@ -130,6 +228,7 @@ body {
     right: 20px;
     z-index: 1050;
     max-width: 350px;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Asegurar fuente */
 }
 
 /* Estilos para el botón de scroll arriba */
@@ -139,44 +238,79 @@ body {
     right: 20px;
     z-index: 1000;
     display: none;
-    width: 40px;
-    height: 40px;
+    width: 45px; /* Un poco más grande */
+    height: 45px; /* Un poco más grande */
     border-radius: 50%;
-    background-color: #007bff;
+    background-color: #6c757d; /* Azul de acento */
     color: white;
     text-align: center;
-    line-height: 40px;
+    line-height: 45px; /* Ajustar al nuevo tamaño */
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada */
+    font-size: 1.2rem; /* Icono más grande si usas fuente */
 }
 
 .scroll-top-btn:hover {
-    background-color: #0069d9;
+    background-color: #6c757d; /* Azul más oscuro al pasar el mouse */
 }
 
 /* En styles.css - ejemplos para mejorar tablas dentro del chat */
 .chat-container .message-content table {
-    width: 100%; /* Ocupar el ancho del mensaje */
+    width: 100%; 
     margin-top: 1em;
     margin-bottom: 1em;
     border-collapse: collapse;
-    font-size: 0.9em; /* Ajustar tamaño si es necesario */
+    font-size: 0.9em; 
 }
 
 .chat-container .message-content th,
 .chat-container .message-content td {
-    border: 1px solid #dee2e6; /* Bordes como en Bootstrap */
-    padding: 0.5rem;
+    border: 1px solid #dee2e6; 
+    padding: 0.6rem; /* Un poco más de padding */
     text-align: left;
 }
 
 .chat-container .message-content th {
-    background-color: #f8f9fa; /* Un fondo ligero para cabeceras */
+    background-color: #e9ecef; /* Cabecera de tabla más clara */
+    font-weight: 600; /* Semi-Bold para cabeceras de tabla */
 }
 
 .chat-container .message-content ul,
 .chat-container .message-content ol {
-    padding-left: 20px; /* Mejorar indentación de listas */
+    padding-left: 20px; 
     margin-top: 0.5em;
     margin-bottom: 0.5em;
 }
+
+#chat .card-header {
+    background-color: #6c757d;
+}
+
+.card {
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.10); /* Sombra existente */
+    border: 1px solid #e0e0e0; /* Borde sutil para definir mejor las cards */
+    border-radius: 0.35rem; /* Radio consistente */
+}
+
+/* .navbar ya estilizado arriba */
+
+.btn-primary, .btn-success, .btn-danger, .btn { /* Aplicar a más botones genéricos también */
+    border-radius: 2rem; /* Mantenemos tu border-radius para botones */
+    font-weight: 600; /* Semi-Bold para todos los botones principales */
+    padding: 0.5rem 1.25rem; /* Ajustar padding para botones redondeados */
+    text-transform: none; /* Evitar uppercase si no se desea */
+}
+.btn-primary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+.btn-primary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+/*
+#busqueda, #ultimas {
+    display: none !important;  /* ocultar secciones eliminadas */
+/*}
+*/

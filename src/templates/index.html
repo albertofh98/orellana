@@ -14,22 +14,17 @@
     <!-- <script src="{{ url_for('static', filename='js/main.js') }}"></script> -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="bi bi-search me-2"></i>Buscador de Ayudas y Subvenciones
-            </a>
+            <a class="navbar-brand d-flex align-items-center" href="/">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" height="100" class="me-2">
+    <span><i class="bi bi-search me-2"></i>Buscador de Ayudas y Subvenciones</span>
+</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#busqueda">Búsqueda Avanzada</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="#chat">Consulta por Chat</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#ultimas">Últimas Convocatorias</a>
                     </li>
                 </ul>
             </div>
@@ -50,7 +45,7 @@
         <div class="row mt-4" id="chat">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header text-white">
                         <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Consulta por Chat</h5>
                     </div>
                     <div class="card-body">

@@ -42,7 +42,9 @@ Werkzeug
 # a través de las dependencias de google-ai-generativelanguage 0.6.x
 langchain-core==0.1.52
 langchain_google_genai>=0.0.11,<2.0.2 # Versiones que usaban google-ai-generativelanguage 0.6.x
+opik
 pytest
 requests
 Flask
 dotenv
+mcp
