@@ -47,3 +47,6 @@ pytest
 requests
 Flask
 dotenv
+PyPDF2
+b64
+fastmcp

@@ -4,11 +4,11 @@
 import io
 import logging
 from urllib.parse import urljoin
+import os
 import PyPDF2
 from fastmcp import FastMCP
 import requests
 from bs4 import BeautifulSoup
-import os
 from google import genai
 from dotenv import load_dotenv
 
@@ -30,14 +30,14 @@ def get_pdf_content(url: str) -> str:
     :param url: URL del PDF a descargar.
     :return: Contenido del PDF como string.
     """
-    logger.info(f"Iniciando extracción de PDF desde: {url}")
+    logger.info("Iniciando extracción de PDF desde:  %s", url)
     response = requests.get(url, timeout=15)
     pdf_io_bytes = io.BytesIO(response.content)
     text_list = []
     pdf = PyPDF2.PdfReader(pdf_io_bytes)
 
     num_pages = len(pdf.pages)
-    logger.info(f"PDF obtenido con {num_pages} páginas.")
+    logger.info("PDF obtenido con %s páginas.", num_pages)
 
     for page in range(num_pages):
         page_text = pdf.pages[page].extract_text()
@@ -58,7 +58,7 @@ def get_info_convo(url: str) -> str:
              enlaces únicos encontrados.
     """
     try:
-        logger.info(f"Obteniendo información de la URL: {url}")
+        logger.info("Obteniendo información de la URL: %s", url)
         response = requests.get(url, timeout=15)
         response.raise_for_status()  # Lanza un error si la solicitud HTTP falla
 

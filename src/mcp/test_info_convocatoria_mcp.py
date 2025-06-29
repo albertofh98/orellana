@@ -1,4 +1,6 @@
-# client_test_mcp.py
+"""
+# test_info_convocatoria_mcp.py
+"""
 import asyncio
 from fastmcp import Client
 
