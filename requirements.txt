@@ -47,4 +47,3 @@ pytest
 requests
 Flask
 dotenv
-mcp

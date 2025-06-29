@@ -2,14 +2,26 @@
 # info_convocatoria_mcp.py
 """
 import io
+import logging
 from urllib.parse import urljoin
 import PyPDF2
 from fastmcp import FastMCP
 import requests
 from bs4 import BeautifulSoup
+import os
+from google import genai
+from dotenv import load_dotenv
 
+# Configuración del logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
 server = FastMCP("MyAssistantServer")
+
+gemini_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 def get_pdf_content(url: str) -> str:
     """
@@ -18,12 +30,14 @@ def get_pdf_content(url: str) -> str:
     :param url: URL del PDF a descargar.
     :return: Contenido del PDF como string.
     """
+    logger.info(f"Iniciando extracción de PDF desde: {url}")
     response = requests.get(url, timeout=15)
     pdf_io_bytes = io.BytesIO(response.content)
     text_list = []
     pdf = PyPDF2.PdfReader(pdf_io_bytes)
 
     num_pages = len(pdf.pages)
+    logger.info(f"PDF obtenido con {num_pages} páginas.")
 
     for page in range(num_pages):
         page_text = pdf.pages[page].extract_text()
@@ -44,8 +58,8 @@ def get_info_convo(url: str) -> str:
              enlaces únicos encontrados.
     """
     try:
+        logger.info(f"Obteniendo información de la URL: {url}")
         response = requests.get(url, timeout=15)
-        print(f"Obteniendo información de la URL: {url}")
         response.raise_for_status()  # Lanza un error si la solicitud HTTP falla
 
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -64,7 +78,6 @@ def get_info_convo(url: str) -> str:
         # 3. Formatear la lista de enlaces como un string
         # Usamos '\n' para que cada enlace aparezca en una nueva línea
         filtered_links = {link for link in unique_links if "pdf" in link.lower()}
-        links_string = "\n".join(sorted(list(filtered_links)))
 
         # 4. Si hay enlaces a PDFs, extraer su contenido
         pdf_content = '\n'.join([get_pdf_content(link) for link in filtered_links])
@@ -72,20 +85,34 @@ def get_info_convo(url: str) -> str:
         # 5. Combinar el texto y los enlaces en un solo string de salida
         final_output = (
             f"{page_text}\n\n"
-            f"--- ENLACES ENCONTRADOS ---\n"
-            f"{links_string}"
             f"\n\n--- CONTENIDO DE LOS PDFS ---\n"
             f"{pdf_content}"
         )
-        return final_output
+        logger.info("Contenido obtenido y combinado correctamente, procediendo al resumen.")
+        return summarise_via_llm(final_output)
 
     except requests.exceptions.RequestException as e:
         error_message = f"Error al procesar la URL {url}: {e}"
-        print(error_message)
+        logger.error(error_message)
         return error_message
+
+def summarise_via_llm(text: str) -> str:
+    """
+    Función para resumir un texto usando el modelo LLM de Mistral.
+    
+    :param text: Texto a resumir.
+    :return: Resumen del texto.
+    """
+    logger.info("Enviando texto al LLM para resumen.")
+    response = gemini_client.models.generate_content(
+        model=os.environ["GEMINI_MODEL"],
+        contents="Dado el siguiente texto, por favor, proporciona un resumen, tanto de la página web como de los PDFs incluidos:\n\n" + text
+    )
+    logger.info("Resumen obtenido correctamente.")
+    return response.text
 
 # 4. Ejecutar la instancia del servidor que ya tiene las herramientas registradas
 if __name__ == "__main__":
-    print("Servidor MCP (info_convocatoria_mcp.py) iniciando...")
+    logger.info("Servidor MCP (info_convocatoria_mcp.py) iniciando...")
     # El método run() inicia el servidor y lo mantiene a la escucha.
     server.run(transport="streamable-http", host="127.0.0.1", port=8000)
