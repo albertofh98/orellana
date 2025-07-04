@@ -110,7 +110,7 @@ buscador_subvenciones_codigo/
    * **GeneratorAgent** → produce la respuesta final *streaming*.
 4. **Opik** provee el prompt óptimo para cada agente.
 5. La respuesta se devuelve al navegador mediante **Server-Sent Events (SSE)**.
-
+```
 ```mermaid
 flowchart TD
     subgraph Navegador
