@@ -20,8 +20,12 @@ from .infosubvenciones_service import info_subvenciones_service
 from .gemini_helpers import (get_gemini_model,
                            generate_content_non_stream,
                            generate_content_stream)
+import opik
 
 logger = logging.getLogger(__name__)
+opik.configure(use_local=False)
+opik_client = opik.Opik()
+os.environ["OPIK_PROJECT_NAME"] = "orellana"
 
 
 # pylint: disable=too-few-public-methods
@@ -71,23 +75,22 @@ class LangGraphService:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         prompt_dir = os.path.join(base_dir, '../../prompts/')
         prompt_files = {
-            "orchestrator": "orchestrator_prompt.txt",
-            "convocatoria_extractor": "convocatoria_extractor_prompt.txt",
-            "extract_params": "extract_params_prompt.txt",
-            "generate_detailed_response": "generate_detailed_response_prompt.txt",
-            "generate_search_summary": "generate_search_summary_prompt.txt",
-            "generate_general_response": "generate_general_response_prompt.txt",
-            "extract_years": "extract_years_prompt.txt",
+            "orchestrator":"orchestrator_prompt",
+            "convocatoria_extractor": "convocatoria_extractor_prompt",
+            "extract_params": "extract_params_prompt",
+            "generate_detailed_response": "generate_detailed_response_prompt",
+            "generate_search_summary": "generate_search_summary_prompt",
+            "generate_general_response": "generate_general_response_prompt",
+            "extract_years": "extract_years_prompt",
             "generate_beneficiaries_summary":
-                "generate_beneficiaries_summary_prompt.txt",
-            "extract_party_params": "extract_party_params_prompt.txt",
-            "generate_parties_summary": "generate_parties_summary_prompt.txt"
+                "generate_beneficiaries_summary_prompt",
+            "extract_party_params": "extract_party_params_prompt",
+            "generate_parties_summary": "generate_parties_summary_prompt"
         }
         loaded_prompts = {}
         for name, fname in prompt_files.items():
             try:
-                with open(os.path.join(prompt_dir, fname), 'r', encoding='utf-8') as f:
-                    loaded_prompts[name] = f.read()
+                loaded_prompts[name] = opik_client.get_prompt(name=fname).prompt
             except FileNotFoundError:
                 error_msg = f"ERROR: Prompt '{name}' ({fname}) not found."
                 loaded_prompts[name] = error_msg

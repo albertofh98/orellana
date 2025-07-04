@@ -5,6 +5,7 @@ el estado del grafo.
 """
 import logging
 import json
+import re
 from services.graph_state import GraphState
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,14 @@ class GeneratorAgent:
         prompt_text = prompt_template
         for key, value in replacements.items():
             prompt_text = prompt_text.replace(key, str(value))
-
+        # Extrae la URL de la API si está disponible
+        pattern = r'"urlBasesReguladoras"\s*:\s*"(?P<url>https?://[^"]+)"'
+        match = re.search(pattern, prompt_text)
+        if match:
+            url_extraída = match.group('url').strip()
+            print("URL EXTRAIDA: ", url_extraída)
+        else:
+            print("No se encontró ninguna URL.")
         return {
             "stream_generation_prompt": prompt_text,
             "stream_generation_node_name": node_name,
@@ -76,15 +84,21 @@ class GeneratorAgent:
         ) else 0
 
         resumen_str = "No se encontraron resultados."
+        convocatorias_details = resultados.get('convocatoriasDetails')
+        print("convocatorias_details: ", convocatorias_details)
         if num_items > 0 and isinstance(resultados.get('content'), list):
             items = []
             for item in resultados['content']:
+                id_ = str(item.get('id'))
                 items.append(
-                    f"ID: {item.get('id')}, "
+                    f"ID: {id_}, "
                     f"Num. Convocatoria: {item.get('numeroConvocatoria')}, "
                     f"Fecha: {item.get('fechaRecepcion')}, "
                     f"Título: {item.get('descripcion')}, "
                     f"Entidad: {item.get('nivel2')}"
+                    f"Región: {convocatorias_details[id_].get('regiones')}, "
+                    f"Presupuesto Total (en Euros): {convocatorias_details[id_].get('presupuestoTotal', 'N/A')}, "
+                    f"Tipos de Beneficiarios: {convocatorias_details[id_].get('tiposBeneficiarios', [])}"
                 )
             resumen_str = "\n".join(items) if items else "Info no disponible."
 

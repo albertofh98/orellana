@@ -24,6 +24,17 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	@echo "✨  Limpieza completada."
 
+seed:
+	@echo "🌱 Cargando los prompts en Opik"
+	@echo "Asegúrate de que la base de datos esté configurada correctamente."
+	@echo "Coming soon: Implementación de la carga de prompts en Opik."
+
+start_mcp_servers:
+	@echo "🚀 Iniciando los servidores MCP..."
+	cd mcp
+	$(PYTHON) info_convocatoria_mcp.py &
+	cd ..
+	
 # Inicia la aplicación Flask.
 start:
 	@echo "🚀  Iniciando la aplicación Flask..."
