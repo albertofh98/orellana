@@ -57,7 +57,7 @@ python src/mcp/info_convocatoria_mcp.py &
 
 # Lanza la aplicación
 python src/main.py
-````
+```
 
 La aplicación quedará accesible en [http://localhost:5000](http://localhost:5000) (puerto configurable vía `PORT`).
 
@@ -97,8 +97,6 @@ buscador_subvenciones_codigo/
 └── media/                      # Recursos estáticos
 ```
 
----
-
 ## Arquitectura de alto nivel
 
 1. **Frontend** envía la consulta del usuario (`/api/chat`).
@@ -110,7 +108,7 @@ buscador_subvenciones_codigo/
    * **GeneratorAgent** → produce la respuesta final *streaming*.
 4. **Opik** provee el prompt óptimo para cada agente.
 5. La respuesta se devuelve al navegador mediante **Server-Sent Events (SSE)**.
-```
+
 ```mermaid
 flowchart TD
     subgraph Navegador
