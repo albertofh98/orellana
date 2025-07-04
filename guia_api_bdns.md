@@ -1,306 +1,431 @@
-A continuación se presenta un manual detallado en formato README.md sobre cómo realizar peticiones a los servicios GET de la API REST de la Base de Datos Nacional de Subvenciones de España, utilizando la librería `requests` de Python.
+# Documentación de la API de SNPSAP
 
----
+Esta documentación describe cómo interactuar con la **API de SNPSAP (Sistema Nacional de Publicidad de Subvenciones y Ayudas Públicas)**. El objetivo de la API es proveer la información de carácter público que se encuentra registrada en la base de datos de subvenciones BDNS.
 
-# Manual de Uso de la API REST de la Base de Datos Nacional de Subvenciones con Python
+- **Versión de la API:** 1.1.0
+- **Términos de Servicio:** [https://www.igae.pap.hacienda.gob.es/](https://www.igae.pap.hacienda.gob.es/)
+- **Contacto de Soporte:** [soportetecnicobdns@igae.hacienda.gob.es](mailto:soportetecnicobdns@igae.hacienda.gob.es)
 
-Este documento proporciona una guía detallada sobre cómo interactuar con los servicios GET de la API REST de la Base de Datos Nacional de Subvenciones (BDNS) de España. Se utilizará la librería `requests` de Python para realizar las peticiones.
+## Cómo Empezar
 
-## Instalación de la librería `requests`
+### URL Base de la API
 
-Antes de comenzar, asegúrate de tener instalada la librería `requests`. Si no la tienes, puedes instalarla usando pip:
+La API está disponible en varios servidores. Puedes usar cualquiera de las siguientes URLs base para tus peticiones:
+
+- `https://www.infosubvenciones.es/bdnstrans/api`
+- `https://www.infosubvenciones.gob.es/bdnstrans/api`
+- `https://www.pap.hacienda.gob.es/bdnstrans/api`
+- `https://www.subvenciones.gob.es/bdnstrans/api`
+
+En los ejemplos de Python, usaremos `https://www.infosubvenciones.es/bdnstrans/api`.
+
+### Instalación (Python)
+
+Para seguir los ejemplos, necesitas tener la librería `requests` instalada.
 
 ```bash
 pip install requests
 ```
 
-## Endpoints de la API
+### Autenticación
 
-La URL base para todos los endpoints de la API es: `https://www.infosubvenciones.es/bdnstrans/v2/`
+Algunos endpoints, especialmente los relacionados con la gestión de suscripciones, requieren autenticación mediante un Token JWT. Este token debe ser incluido en la cabecera de la petición de la siguiente manera:
 
-A continuación, se detallan todos los servicios GET disponibles, sus parámetros de entrada, los datos de salida y un ejemplo de cómo realizar la petición en Python.
+`Authorization: Bearer <TU_TOKEN_JWT>`
+
+El token se obtiene a través de los endpoints de login o alta de suscripción.
 
 ---
 
-### 1. Búsqueda de Convocatorias
+## Convocatorias
 
-Este servicio permite buscar convocatorias de subvenciones.
+Endpoints para consultar información sobre las convocatorias con publicidad registradas.
 
-**Endpoint:** `/convocatorias/search`
+### `GET /convocatorias/busqueda`
 
-#### Parámetros de Entrada
+Obtiene una lista paginada de convocatorias según los filtros especificados.
 
-| Parámetro | Tipo | Obligatorio | Descripción |
-|---|---|---|---|
-| `q` | string | No | Texto libre para buscar en los campos de la convocatoria. |
-| `titulo` | string | No | Búsqueda por el título de la convocatoria. |
-| `finalidad` | string | No | Búsqueda por la finalidad de la convocatoria. |
-| `idRegion` | string | No | Filtrar por el ID de la región. |
-| `idCCAA` | string | No | Filtrar por el ID de la Comunidad Autónoma. |
-| `idProvincia` | string | No | Filtrar por el ID de la provincia. |
-| `idEntidadLocal` | string | No | Filtrar por el ID de la entidad local. |
-| `idOrgano` | string | No | Filtrar por el ID del órgano convocante. |
-| `codigoOrgano` | string | No | Filtrar por el código DIR3 del órgano convocante. |
-| `fechaMin` | date | No | Fecha mínima de la convocatoria (formato `dd/MM/yyyy`). |
-| `fechaMax` | date | No | Fecha máxima de la convocatoria (formato `dd/MM/yyyy`). |
-| `page` | integer | No | Número de la página de resultados (por defecto 1). |
-| `rows` | integer | No | Número de resultados por página (por defecto 10). |
+**Parámetros de consulta:**
 
-#### Datos de Salida
+| Parámetro | Descripción | Tipo | Requerido | Ejemplo |
+| :--- | :--- | :--- | :--- | :--- |
+| `page` | Número de página. | integer | No | `0` |
+| `pageSize` | Tamaño de página. | integer | No | `10` |
+| `descripcion` | Cadena con el título o parte de él. | string | No | `"Resolución"` |
+| `descripcionTipoBusqueda` | Tipo de búsqueda en el título (1: todas, 2: alguna, 0: frase exacta). | integer | No | `0` |
+| `numeroConvocatoria` | Código BDNS a buscar. | string | No | `"376046"` |
+| `mrr` | Filtrar por Mecanismo de Recuperación y Resiliencia. | boolean | No | `false` |
+| `fechaDesde` | Fecha de inicio del periodo (formato `dd/mm/yyyy`). | string | No | `"01/01/2023"` |
+| `fechaHasta` | Fecha de fin del periodo (formato `dd/mm/yyyy`). | string | No | `"31/01/2023"` |
+| `tipoAdministracion` | Tipo de órgano (C: Estado, A: C. Autónoma, L: Local, O: Otros). | string | No | `"A"` |
+| `organos` | Lista de identificadores de los órganos administrativos. | array[string] | No | `['713', '4730']` |
+| `regiones` | Lista de identificadores de las regiones de impacto. | array[integer] | No | `[3, 50]` |
+| `...` | (Y otros filtros disponibles en la especificación). | | | |
 
-| Campo | Tipo | Descripción |
-|---|---|---|
-| `numResultados` | integer | Número total de resultados encontrados. |
-| `pagina` | integer | Número de la página actual. |
-| `datos` | array | Lista de convocatorias. |
-| `id` | integer | Identificador único de la convocatoria. |
-| `titulo` | string | Título de la convocatoria. |
-| `finalidad` | string | Descripción de la finalidad. |
-| `organo` | string | Órgano convocante. |
-| `codigoOrgano` | string | Código DIR3 del órgano. |
-| `fechaRegistro` | string | Fecha de registro de la convocatoria. |
-| `region` | string | Región. |
-| `CCAA` | string | Comunidad Autónoma. |
-| `provincia` | string | Provincia. |
-| `entidadLocal` | string | Entidad Local. |
-| `url` | string | URL a la convocatoria en el portal. |
+**Respuesta Exitosa (200 OK):**
 
-#### Ejemplo en Python
+Retorna un objeto JSON con una lista de convocatorias y metadatos de paginación.
+
+```json
+{
+  "content": [
+    {
+      "id": 577594,
+      "mrr": false,
+      "numeroConvocatoria": "376046",
+      "descripcion": "Resolución del 4 de diciembre de 2017...",
+      "fechaRecepcion": "2017-12-18",
+      "nivel1": "GALICIA",
+      "nivel2": "AGENCIA GALLEGA DE LAS INDUSTRIAS CULTURALES (AGADIC)",
+      "nivel3": null,
+      "codigoINVENTE": "INV00000108"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "number": 0
+}
+```
+
+**Ejemplo de Petición (Python):**
 
 ```python
 import requests
+import json
 
-url = "https://www.infosubvenciones.es/bdnstrans/v2/convocatorias/search"
+BASE_URL = "https://www.infosubvenciones.es/bdnstrans/api"
+endpoint = "/convocatorias/busqueda"
+
+# Parámetros para buscar convocatorias de la Comunidad Autónoma de Galicia (código de región 3)
+# que contengan la palabra "audiovisuales"
 params = {
-    "titulo": "ayudas a la investigación",
-    "rows": 5
+    'descripcion': 'audiovisuales',
+    'descripcionTipoBusqueda': 2, # alguna de las palabras
+    'regiones': [3],
+    'pageSize': 5
 }
 
-response = requests.get(url, params=params)
+try:
+    response = requests.get(f"{BASE_URL}{endpoint}", params=params)
+    response.raise_for_status()  # Lanza un error para códigos de estado 4xx/5xx
 
-if response.status_code == 200:
     data = response.json()
-    print("Número de resultados:", data.get("numResultados"))
-    for convocatoria in data.get("datos", []):
-        print("- Título:", convocatoria.get("titulo"))
-        print("  Órgano:", convocatoria.get("organo"))
-        print("  Fecha de Registro:", convocatoria.get("fechaRegistro"))
-        print("-" * 20)
-else:
-    print("Error en la petición:", response.status_code)
+    print(json.dumps(data, indent=2, ensure_ascii=False))
+
+    print(f"\nTotal de convocatorias encontradas: {data.get('totalElements')}")
+
+except requests.exceptions.RequestException as e:
+    print(f"Error en la petición: {e}")
+except json.JSONDecodeError:
+    print("Error: La respuesta no es un JSON válido.")
 
 ```
 
----
+### `GET /convocatorias/{numConv}`
 
-### 2. Obtener Detalles de una Convocatoria
+Obtiene el detalle completo de una convocatoria específica.
+*(Nota: El endpoint en la especificación es `/convocatorias` con un parámetro `numConv`. Se representa aquí de forma más RESTful para claridad).*
 
-Este servicio permite obtener los detalles completos de una convocatoria específica a partir de su identificador.
+**Parámetros de consulta:**
 
-**Endpoint:** `/convocatorias/{id}`
+| Parámetro | Descripción | Tipo | Requerido | Ejemplo |
+| :--- | :--- | :--- | :--- | :--- |
+| `numConv` | Número de la convocatoria (código BDNS). | string | Sí | `"406718"` |
 
-#### Parámetros de Entrada
-
-| Parámetro | Tipo | Obligatorio | Descripción |
-|---|---|---|---|
-| `id` | integer | Sí | Identificador único de la convocatoria. |
-
-#### Datos de Salida
-
-El objeto JSON devuelto contiene información detallada sobre la convocatoria, incluyendo título, finalidad, órgano convocante, fechas, e información presupuestaria.
-
-#### Ejemplo en Python
+**Ejemplo de Petición (Python):**
 
 ```python
 import requests
+import json
 
-# Reemplazar con un ID de convocatoria válido
-id_convocatoria = 12345 
-url = f"https://www.infosubvenciones.es/bdnstrans/v2/convocatorias/{id_convocatoria}"
+BASE_URL = "https://www.infosubvenciones.es/bdnstrans/api"
+endpoint = "/convocatorias"
 
-response = requests.get(url)
-
-if response.status_code == 200:
-    convocatoria = response.json()
-    print("Título:", convocatoria.get("titulo"))
-    print("Finalidad:", convocatoria.get("finalidad"))
-    print("Órgano:", convocatoria.get("organoConvocante", {}).get("nombre"))
-else:
-    print("Error en la petición:", response.status_code)
-
-```
-
----
-
-### 3. Búsqueda de Concesiones
-
-Este servicio permite buscar concesiones de subvenciones.
-
-**Endpoint:** `/concesiones/search`
-
-#### Parámetros de Entrada
-
-| Parámetro | Tipo | Obligatorio | Descripción |
-|---|---|---|---|
-| `q` | string | No | Texto libre para buscar en los campos de la concesión. |
-| `idConvocatoria` | integer | No | Filtrar por el ID de la convocatoria asociada. |
-| `nifBeneficiario` | string | No | Filtrar por el NIF del beneficiario. |
-| `nombreBeneficiario` | string | No | Búsqueda por el nombre del beneficiario. |
-| `idRegion` | string | No | Filtrar por el ID de la región. |
-| `idCCAA` | string | No | Filtrar por el ID de la Comunidad Autónoma. |
-| `idProvincia` | string | No | Filtrar por el ID de la provincia. |
-| `idEntidadLocal` | string | No | Filtrar por el ID de la entidad local. |
-| `idOrgano` | string | No | Filtrar por el ID del órgano concedente. |
-| `codigoOrgano` | string | No | Filtrar por el código DIR3 del órgano concedente. |
-| `fechaMin` | date | No | Fecha mínima de la concesión (formato `dd/MM/yyyy`). |
-| `fechaMax` | date | No | Fecha máxima de la concesión (formato `dd/MM/yyyy`). |
-| `page` | integer | No | Número de la página de resultados (por defecto 1). |
-| `rows` | integer | No | Número de resultados por página (por defecto 10). |
-
-#### Datos de Salida
-
-| Campo | Tipo | Descripción |
-|---|---|---|
-| `numResultados` | integer | Número total de resultados encontrados. |
-| `pagina` | integer | Número de la página actual. |
-| `datos` | array | Lista de concesiones. |
-| `id` | integer | Identificador único de la concesión. |
-| `convocatoriaBDNS`| integer | ID de la convocatoria en la BDNS. |
-| `tituloConvocatoria`| string | Título de la convocatoria asociada. |
-| `nombreBeneficiario`| string | Nombre del beneficiario. |
-| `nifBeneficiario` | string | NIF del beneficiario. |
-| `importe` | number | Importe de la concesión. |
-| `fechaConcesion` | string | Fecha de la concesión. |
-| `organoConcedente` | string | Órgano que realiza la concesión. |
-
-#### Ejemplo en Python
-
-```python
-import requests
-
-url = "https://www.infosubvenciones.es/bdnstrans/v2/concesiones/search"
 params = {
-    "nombreBeneficiario": "nombre de un beneficiario",
-    "rows": 5
+    'numConv': '406718'
 }
 
-response = requests.get(url, params=params)
+try:
+    response = requests.get(f"{BASE_URL}{endpoint}", params=params)
+    response.raise_for_status()
 
-if response.status_code == 200:
     data = response.json()
-    print("Número de resultados:", data.get("numResultados"))
-    for concesion in data.get("datos", []):
-        print("- Beneficiario:", concesion.get("nombreBeneficiario"))
-        print("  Importe:", concesion.get("importe"), "EUR")
-        print("  Fecha:", concesion.get("fechaConcesion"))
-        print("-" * 20)
-else:
-    print("Error en la petición:", response.status_code)
+    print(json.dumps(data, indent=2, ensure_ascii=False))
+
+except requests.exceptions.RequestException as e:
+    print(f"Error en la petición: {e}")
+
 ```
 
----
+### `GET /convocatorias/exportar`
 
-### 4. Obtener Detalles de una Concesión
+Exporta los resultados de una búsqueda de convocatorias a un archivo (PDF, XLSX o CSV).
 
-Este servicio permite obtener los detalles completos de una concesión específica a partir de su identificador.
+**Parámetros de consulta:**
 
-**Endpoint:** `/concesiones/{id}`
+| Parámetro | Descripción | Tipo | Requerido | Ejemplo |
+| :--- | :--- | :--- | :--- | :--- |
+| `tipoDoc` | Formato del documento de salida. | string | Sí | `"pdf"`, `"xlsx"`, `"csv"` |
+| `vpd` | Identificador del portal. | string | Sí | `"GE"` |
+| `...` | (Acepta los mismos filtros que `/convocatorias/busqueda`). | | | |
 
-#### Parámetros de Entrada
-
-| Parámetro | Tipo | Obligatorio | Descripción |
-|---|---|---|---|
-| `id` | integer | Sí | Identificador único de la concesión. |
-
-#### Datos de Salida
-
-El objeto JSON devuelto contiene información detallada sobre la concesión, incluyendo beneficiario, importe, fechas, y la convocatoria asociada.
-
-#### Ejemplo en Python
+**Ejemplo de Petición (Python):**
 
 ```python
 import requests
 
-# Reemplazar con un ID de concesión válido
-id_concesion = 12345 
-url = f"https://www.infosubvenciones.es/bdnstrans/v2/concesiones/{id_concesion}"
+BASE_URL = "https://www.infosubvenciones.es/bdnstrans/api"
+endpoint = "/convocatorias/exportar"
 
-response = requests.get(url)
+params = {
+    'tipoDoc': 'csv',
+    'vpd': 'GE',
+    'descripcion': 'ayudas cultura',
+    'fechaDesde': '01/01/2023'
+}
 
-if response.status_code == 200:
-    concesion = response.json()
-    print("Beneficiario:", concesion.get("beneficiario", {}).get("nombre"))
-    print("Importe:", concesion.get("importe"))
-    print("Instrumento de ayuda:", concesion.get("instrumentoAyuda"))
-else:
-    print("Error en la petición:", response.status_code)
+try:
+    response = requests.get(f"{BASE_URL}{endpoint}", params=params)
+    response.raise_for_status()
+
+    # Guardar el contenido en un archivo
+    file_extension = params['tipoDoc']
+    with open(f"exportacion_convocatorias.{file_extension}", "wb") as f:
+        f.write(response.content)
+
+    print(f"Archivo 'exportacion_convocatorias.{file_extension}' guardado correctamente.")
+
+except requests.exceptions.RequestException as e:
+    print(f"Error en la petición: {e}")
+```
+---
+## Concesiones
+
+Endpoints para consultar información sobre las concesiones registradas.
+
+### `GET /concesiones/busqueda`
+Obtiene una lista paginada de concesiones según los filtros especificados.
+
+**Parámetros de consulta:**
+
+| Parámetro | Descripción | Tipo | Requerido | Ejemplo |
+| :--- | :--- | :--- | :--- | :--- |
+| `page` | Número de página. | integer | No | `0` |
+| `pageSize` | Tamaño de página. | integer | No | `10` |
+| `numeroConvocatoria` | Código BDNS de la convocatoria asociada. | string | No | `"553219"` |
+| `codConcesion` | Código de la concesión a buscar. | string | No | `"66715687"` |
+| `nifCif` | NIF/CIF del beneficiario. | string | No | `"A12345678"` |
+| `fechaDesde` | Fecha de inicio del periodo (formato `dd/mm/yyyy`). | string | No | `"01/01/2022"` |
+| `fechaHasta` | Fecha de fin del periodo (formato `dd/mm/yyyy`). | string | No | `"31/12/2022"` |
+| `...` | (Y otros filtros disponibles en la especificación). | | | |
+
+**Respuesta Exitosa (200 OK):**
+
+Retorna un objeto JSON con una lista de concesiones y metadatos de paginación.
+
+```json
+{
+  "content": [
+    {
+      "id": 66715687,
+      "idConvocatoria": 754779,
+      "numeroConvocatoria": "553219",
+      "convocatoria": "Avales a financiación a empresas y autónomos...",
+      "fechaConcesion": "2022-05-20",
+      "idPersona": 11962600,
+      "beneficiario": "***3410** JUAN RAUL LOPEZ -",
+      "instrumento": "GARANTÍA",
+      "importe": 64000,
+      "ayudaEquivalente": 8538.32,
+      "tieneProyecto": false
+    }
+  ],
+  "totalElements": 1
+}
+```
+
+**Ejemplo de Petición (Python):**
+
+```python
+import requests
+import json
+
+BASE_URL = "https://www.infosubvenciones.es/bdnstrans/api"
+endpoint = "/concesiones/busqueda"
+
+# Buscar concesiones para un NIF/CIF específico
+params = {
+    'nifCif': 'B35236355', # Ejemplo de la documentación
+    'pageSize': 5
+}
+
+try:
+    response = requests.get(f"{BASE_URL}{endpoint}", params=params)
+    response.raise_for_status()
+
+    data = response.json()
+    print(json.dumps(data, indent=2, ensure_ascii=False))
+
+except requests.exceptions.RequestException as e:
+    print(f"Error en la petición: {e}")
+```
+---
+
+## Ayudas de Estado
+
+Endpoints para consultar concesiones clasificadas como Ayudas de Estado.
+
+### `GET /ayudasestado/busqueda`
+
+Obtiene una lista paginada de concesiones de Ayuda de Estado según filtros.
+
+**Parámetros de consulta:**
+
+| Parámetro | Descripción | Tipo | Requerido | Ejemplo |
+| :--- | :--- | :--- | :--- | :--- |
+| `ayudaEstado`| SA Number - Referencia de ayuda de estado (sólo cifras). | string | No | `"48422"` |
+| `objetivos` | Lista de identificadores de los objetivos de la concesión. | array[integer] | No | `[167]` |
+| `reglamento`| Identificador del reglamento. | integer | No | `6` |
+| `...` | (Acepta filtros comunes como `nifCif`, `fechaDesde`, etc.). | | | |
+
+**Respuesta Exitosa (200 OK):**
+
+Retorna un objeto JSON con la lista de ayudas.
+
+```json
+{
+  "content": [
+    {
+      "idConcesion": 24666326,
+      "numeroConvocatoria": "307701",
+      "convocatoria": "Subvenciones a los seguros de acuicultura marina 2017",
+      "convocante": "ESTADO MINISTERIO DE AGRICULTURA...",
+      "reglamento": "REG (UE) 1388/2014, DE 16 DE DICIEMBRE...",
+      "objetivo": "ART. 40 AYUDAS PARA SEGUROS DE LAS POBLACIONES ACUÍCOLAS",
+      "beneficiario": "B35236355 AQUANARIA S.L.",
+      "importe": 235704.95,
+      "ayudaEstado": "SA.48422",
+      "urlAyudaEstado": "http://ec.europa.eu/competition/elojade/isef/case_details.cfm?proc_code=3_SA_48422"
+    }
+  ]
+}
+```
+
+**Ejemplo de Petición (Python):**
+
+```python
+import requests
+import json
+
+BASE_URL = "https://www.infosubvenciones.es/bdnstrans/api"
+endpoint = "/ayudasestado/busqueda"
+
+# Buscar ayudas de estado por su SA Number
+params = {
+    'ayudaEstado': '48422',
+    'pageSize': 2
+}
+
+try:
+    response = requests.get(f"{BASE_URL}{endpoint}", params=params)
+    response.raise_for_status()
+
+    data = response.json()
+    print(json.dumps(data, indent=2, ensure_ascii=False))
+
+except requests.exceptions.RequestException as e:
+    print(f"Error en la petición: {e}")
 ```
 
 ---
 
-### 5. Obtener Órganos
+## Catálogos
 
-Este servicio devuelve una lista de los órganos que pueden aparecer como convocantes o concedentes.
+Endpoints para obtener listas de valores utilizados en los filtros de búsqueda (catálogos).
 
-**Endpoint:** `/organos`
+### `GET /regiones`
 
-#### Parámetros de Entrada
+Obtiene todas las regiones disponibles en una estructura de árbol.
 
-Ninguno.
-
-#### Datos de Salida
-
-Una lista de objetos, donde cada objeto representa un órgano con su `id` y `nombre`.
-
-#### Ejemplo en Python
-
+**Ejemplo de Petición (Python):**
 ```python
 import requests
+import json
 
-url = "https://www.infosubvenciones.es/bdnstrans/v2/organos"
+BASE_URL = "https://www.infosubvenciones.es/bdnstrans/api"
+endpoint = "/regiones"
 
-response = requests.get(url)
+try:
+    response = requests.get(f"{BASE_URL}{endpoint}")
+    response.raise_for_status()
 
-if response.status_code == 200:
-    organos = response.json()
-    print(f"Se encontraron {len(organos)} órganos.")
-    # Imprimir los primeros 5 órganos
-    for organo in organos[:5]:
-        print(f"- ID: {organo.get('id')}, Nombre: {organo.get('nombre')}")
-else:
-    print("Error en la petición:", response.status_code)
+    data = response.json()
+    print("Regiones disponibles (primer nivel):")
+    for region in data:
+        print(f"- ID: {region.get('id')}, Descripción: {region.get('descripcion')}")
+
+except requests.exceptions.RequestException as e:
+    print(f"Error en la petición: {e}")
 ```
 
----
+### `GET /finalidades`
 
-### 6. Obtener Tipos de Beneficiario
+Obtiene todas las finalidades (políticas de gasto) disponibles.
 
-Este servicio devuelve una lista de los tipos de beneficiarios.
+**Ejemplo de Petición (Python):**
+```python
+import requests
+import json
 
-**Endpoint:** `/tiposBeneficiario`
+BASE_URL = "https://www.infosubvenciones.es/bdnstrans/api"
+endpoint = "/finalidades"
 
-#### Parámetros de Entrada
+try:
+    response = requests.get(f"{BASE_URL}{endpoint}")
+    response.raise_for_status()
 
-Ninguno.
+    data = response.json()
+    print("Finalidades disponibles:")
+    for finalidad in data:
+        print(f"- ID: {finalidad.get('id')}, Descripción: {finalidad.get('descripcion')}")
 
-#### Datos de Salida
+except requests.exceptions.RequestException as e:
+    print(f"Error en la petición: {e}")
+```
+### `GET /organos`
+Obtiene los órganos administrativos para un tipo de administración específico.
 
-Una lista de objetos, donde cada objeto representa un tipo de beneficiario con su `id` y `nombre`.
+**Parámetros de consulta:**
 
-#### Ejemplo en Python
+| Parámetro | Descripción | Tipo | Requerido | Ejemplo |
+| :--- | :--- | :--- | :--- | :--- |
+| `idAdmon` | Tipo de órgano (C: Estado, A: C. Autónoma, L: Local, O: Otros).| string | Sí | `"A"` |
+| `vpd` | Identificador del portal. | string | No | `"GE"` |
+
+**Ejemplo de Petición (Python):**
 
 ```python
 import requests
+import json
 
-url = "https://www.infosubvenciones.es/bdnstrans/v2/tiposBeneficiario"
+BASE_URL = "https://www.infosubvenciones.es/bdnstrans/api"
+endpoint = "/organos"
 
-response = requests.get(url)
+# Obtener órganos para las Comunidades Autónomas
+params = {
+    'idAdmon': 'A'
+}
 
-if response.status_code == 200:
-    tipos_beneficiario = response.json()
-    print("Tipos de beneficiario encontrados:")
-    for tipo in tipos_beneficiario:
-        print(f"- ID: {tipo.get('id')}, Nombre: {tipo.get('nombre')}")
-else:
-    print("Error en la petición:", response.status_code)
+try:
+    response = requests.get(f"{BASE_URL}{endpoint}", params=params)
+    response.raise_for_status()
+
+    data = response.json()
+    print("Órganos de Comunidades Autónomas (primer nivel):")
+    for organo in data:
+        print(f"- ID: {organo.get('id')}, Descripción: {organo.get('descripcion')}")
+
+
+except requests.exceptions.RequestException as e:
+    print(f"Error en la petición: {e}")
 ```

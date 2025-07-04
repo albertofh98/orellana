@@ -4,6 +4,7 @@ CHAT_HISTORY_STR
 Consulta original del usuario: "ORIGINAL_QUERY"
 Basándote en los siguientes detalles de la convocatoria, genera una respuesta clara, concisa y útil en español.
 Resume los puntos más importantes como el objetivo, beneficiarios, cuantía (si está disponible) y plazos.
+Por úlltimo, deberá incluir (si lo hay) la URL con las bases reguladoras (normalmente este campo se llama urlBasesReguladoras)
 Detalles de la convocatoria (JSON):
 DETALLES_TEXTO
 Tu respuesta debe ser informativa, en lenguaje natural y fácil de entender. No menciones API o JSON. Si algo no está, no lo inventes.

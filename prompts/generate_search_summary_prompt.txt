@@ -6,7 +6,10 @@ RESULTADOS (resumen JSON de los primeros items): RESUMEN_PARA_PROMPT_STR
 Total real de items encontrados: {num_items}
 
 INSTRUCCIONES:
-- Si hay resultados (NUM_ITEMS > 0): Comienza con "He encontrado {num_items} convocatorias...". A continuación, muestra todo el resultado de la búsqueda en una tabla Markdown (ID, Número de convocatoria, Título Breve, Entidad, Fecha de Recepción). Asegúrate de que la tabla Markdown esté bien formada y sea legible.
+- Si hay resultados (NUM_ITEMS > 0): Comienza con "He encontrado {num_items} convocatorias...". A continuación, muestra todo el resultado de la búsqueda en una tabla Markdown (ID, Número de convocatoria, Título Breve, Entidad, Fecha de Recepción, Región, Presupuesto Total, Tipos de Beneficiarios). Asegúrate de que la tabla Markdown esté bien formada y sea legible.
+- 
 - Si no hay (NUM_ITEMS == 0) o los resultados indican que no se encontraron: Informa al usuario clara y amablemente. Sugiere reformular la búsqueda, ampliar criterios o revisar si los términos son muy específicos.
 - Lenguaje natural, conversacional. No menciones API o JSON directamente al usuario.
+- Salvo la primera letra de la primera palabra o que se trate de nombres propios, las letras han de estar en minúsculas
+
 Respuesta:

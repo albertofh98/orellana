@@ -1,187 +1,192 @@
-# Buscador de Subvenciones (Orellana)
+# Buscador de Subvenciones · **Orellana**
 
-<div style="text-align: center;">
-  <img src="media/logo.png" alt="alt text" style="width: 250px;" />
-</div>
+![Orellana banner](media/logo.png)
 
-Orellana es una **aplicación web** de chat conversacional para buscar información sobre subvenciones (convocatorias, beneficiarios, etc.) en España usando servicios de IA y una arquitectura basada en grafos.
-
-## 📋 Descripción
-
-- **Lenguaje**: Python 3.10+
-- **Framework Web**: Flask
-- **Motor de IA**: Gemini (a través de `langgraph`) y OpenAI
-- **Arquitectura**: Orquestador basado en grafos (LangGraph) con agentes especializados y microservicios (MCP).
-- **Frontend**: HTML/CSS/JS mínimo, sin frameworks de JS
-
-El objetivo es proporcionar una interfaz de chat donde el usuario haga consultas en lenguaje natural y obtenga respuestas detalladas sobre subvenciones, parámetros de búsqueda, detalles de convocatoria y listados de beneficiarios.
+> **Orellana** es una aplicación web de _chat conversacional_ capaz de buscar, enriquecer y resumir **subvenciones públicas** del sistema InfoSubvenciones (España).  
+> Combina **Flask** + **LangGraph** + **LLM agents** (Gemini / OpenAI) y gestiona los _prompts_ de manera centralizada mediante **Opik**.
 
 ---
 
-## 🔧 Requisitos
+## Índice
 
-- Python 3.10 o superior
-- Acceso a la API de InfoSubvenciones (URL y credenciales en `.env`)
-- Claves de API de IA (configuración en `.env`)
+1. [Características](#características)  
+2. [Instalación rápida](#instalación-rápida)  
+3. [Variables de entorno](#variables-de-entorno)  
+4. [Estructura de directorios](#estructura-de-directorios)  
+5. [Arquitectura de alto nivel](#arquitectura-de-alto-nivel)  
+6. [Componentes principales](#componentes-principales)  
+7. [Ejecución de tests](#ejecución-de-tests)  
+8. [Licencia](#licencia)  
+9. [Relaciones entre ficheros `.py`](#relaciones-entre-ficheros-py)  
 
-Instalación de dependencias:
+---
+
+## Características
+
+| Categoría                | Detalle                                                     |
+|--------------------------|-------------------------------------------------------------|
+| **Back-end**            | Python 3.10+, **Flask**                                      |
+| **Orquestación**        | **LangGraph** (grafos dirigidos condicionales)               |
+| **LLM**                 | Google **Gemini** + **OpenAI** (selección dinámica)          |
+| **Gestión de prompts**  | **Opik** – versionado y _observability_                      |
+| **Frontend**            | HTML + CSS + JS nativo (SSE para _streaming_)                |
+| **Micro-servicios**     | Scraper FastAPI (`info_convocatoria_mcp.py`)                 |
+| **CI**                  | GitHub Actions (lint + tests)                                |
+| **Tests**               | `pytest` + `pytest-asyncio`                                  |
+
+---
+
+## Instalación rápida
+
 ```bash
+git clone https://github.com/tu-org/buscador_subvenciones.git
+cd buscador_subvenciones_codigo
+
+# Crea y activa un venv (opcional)
+python -m venv .venv
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
+
 pip install -r requirements.txt
-```
 
-## ⚙️ Configuración
+# Copia .env de ejemplo y añade tus credenciales
+cp .env.example .env
+vim .env                        # o tu editor favorito
 
-1. Copiar `.env.example` a `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-2. Rellenar variables en `.env`:
-   ```dotenv
-   PORT=5000
-   FLASK_DEBUG=True
-   INFOSUBVENCIONES_API_URL=https://api.infosubvenciones.gob.es
-   INFOSUBVENCIONES_API_KEY=TU_API_KEY
-   GEMINI_API_KEY=TU_API_KEY_GEMINI
-   GEMINI_MODEL=gemini-1.5-flash # O el modelo que desees usar
-   ```
+# Inicia la API de scraping en otra terminal (opcional pero recomendado)
+python src/mcp/info_convocatoria_mcp.py &
+
+# Lanza la aplicación
+python src/main.py
+````
+
+La aplicación quedará accesible en [http://localhost:5000](http://localhost:5000) (puerto configurable vía `PORT`).
 
 ---
 
-## 📂 Estructura de Directorios
+## Variables de entorno
+
+| Variable         | Descripción                          | Obligatoria | Ejemplo               |
+| ---------------- | ------------------------------------ | ----------- | --------------------- |
+| `GEMINI_API_KEY` | Clave de la API de Gemini            | ✔️          | `AIza...`             |
+| `OPENAI_API_KEY` | Clave de la API de OpenAI (opcional) | ❌           | `sk-...`              |
+| `OPIK_API_KEY`   | Token de acceso a Opik               | ✔️          | `opk_xxx`             |
+| `OPIK_API_URL`   | URL base de la API de Opik           | ❌           | `https://api.opik.ai` |
+| `FLASK_DEBUG`    | Activa modo debug (`0`/`1`)          | ❌           | `1`                   |
+| `PORT`           | Puerto HTTP de Flask                 | ❌           | `5000`                |
+
+> **Tip**: guarda todas las variables en un fichero `.env`; se cargarán automáticamente mediante **python-dotenv**.
+
+---
+
+## Estructura de directorios
 
 ```text
 buscador_subvenciones_codigo/
-├─ .env
-├─ requirements.txt
-├─ prompts/                   # Plantillas para llamadas a modelos de IA
-│  ├─ ... (prompts)
-├─ src/
-│  ├─ main.py                # Entrada de la aplicación Flask
-│  ├─ agents/                # Agentes LLM: extracción, API, generación, errores
-│  ├─ services/              # Servicios: llamadas a API, estado de grafo, helpers
-│  ├─ graph/                 # Definición de grafo de flujo de trabajo con LangGraph
-│  ├─ templates/
-│  │   └─ index.html         # Plantilla de la interfaz de usuario
-│  └─ static/
-│      ├─ css/styles.css
-│      └─ js/main.js
-├─ tools/                     # Herramientas y microservicios externos
-│  └─ info_convocatoria_mcp.py # Servidor MCP para scraping y resumen de convocatorias
+├── .env.example
+├── requirements.txt
+├── prompts/                    # Plantillas locales de respaldo
+├── src/
+│   ├── main.py                 # Entrypoint Flask
+│   ├── agents/                 # Agentes LLM
+│   ├── graph/                  # Grafo LangGraph
+│   ├── services/               # Servicios auxiliares
+│   ├── mcp/                    # Micro-servicios externos
+│   ├── templates/              # Jinja2 templates
+│   └── static/                 # CSS / JS / imágenes
+├── test/                       # Tests
+└── media/                      # Recursos estáticos
 ```
 
 ---
 
-## 🏛️ Arquitectura & Flujo de Ejecución
+## Arquitectura de alto nivel
 
-1.  **Usuario** accede a la ruta `/` y carga `index.html`, que inicializa el chat.
-2.  El cliente JS envía la consulta al endpoint `/api/chat` vía `fetch`.
-3.  En `main.py`, se crea un objeto `GraphState` con la consulta original y el historial.
-4.  Se construye el **grafo de flujo** definido en `src/graph/graph.py`:
-    -   Nodos de **determinación de intención** y **extracción de parámetros**.
-    -   Nodos de **llamada a APIs** (`infosubvenciones_service`) y **herramientas externas**, como el microservicio de scraping (`info_convocatoria_mcp.py`).
-    -   Nodos de **generación de respuestas** con IA.
-    -   Nodos de **manejo de errores**.
-5.  El grafo evalúa condiciones en cada arista para decidir la siguiente acción.
-6.  Los **Agentes** (`src/agents/*.py`) ejecutan las tareas correspondientes.
-7.  Si se necesita información de una URL externa (p. ej., el detalle de una convocatoria), un agente puede invocar a la herramienta **`info_convocatoria_mcp.py`**, que se ejecuta como un servidor independiente.
-8.  El resultado final es **streamed** al cliente, que renderiza los mensajes en la interfaz.
+1. **Frontend** envía la consulta del usuario (`/api/chat`).
+2. `main.py` crea un **`GraphState`** con la conversación actual.
+3. **LangGraph** enrutará la petición por distintos agentes:
 
----
-
-## 🛠️ Detalle de Componentes
-
-A continuación se describen con más detalle los principales ficheros Python del proyecto.
-
-### 1. `src/main.py` (Aplicación Flask)
-- **Punto de entrada** de la aplicación web principal.
-- Define la ruta `/api/chat` que recibe las consultas del usuario e invoca el grafo de LangGraph para procesarlas.
-- Gestiona el streaming de la respuesta de vuelta al cliente.
-
----
-
-### 2. Agentes (`src/agents/*.py`)
-Cada agente es una clase con un método `run` que modifica el estado del grafo.
--   **ExtractorAgent**: Extrae parámetros (años, IDs) de la consulta del usuario.
--   **ApiCallerAgent**: Realiza llamadas a APIs externas, como InfoSubvenciones o el microservicio de scraping.
--   **GeneratorAgent**: Genera la respuesta en lenguaje natural usando un LLM.
--   **BeneficiariesAgent**: Formatea listas de beneficiarios.
--   **ErrorHandlerAgent**: Gestiona excepciones y errores durante la ejecución.
-
----
-
-### 3. Servicios (`src/services/*.py`)
--   **`infosubvenciones_service.py`**: Encapsula la lógica para interactuar con la API de InfoSubvenciones.
--   **`langgraph_service.py`**: Orquesta la ejecución del grafo definido con LangGraph.
--   **`graph_state.py`**: Define la estructura de datos (`GraphState`) que fluye a través del grafo.
--   **`gemini_helpers.py`**: Funciones auxiliares para interactuar con la API de Gemini.
-
----
-
-### 4. Grafo de Conversación (`src/graph/graph.py`)
-- Define la lógica de control del chatbot.
-- Conecta los agentes mediante nodos y aristas condicionales para crear flujos de conversación complejos y adaptativos.
-
----
-
-### 5. Frontend (`src/templates` y `src/static`)
-- Contiene el código HTML, CSS y JavaScript para la interfaz de chat del usuario.
-- Se comunica con el backend a través de peticiones `fetch` y maneja respuestas en streaming (Server-Sent Events).
-
----
-
-### 6. Herramienta de Scraping (`tools/info_convocatoria_mcp.py`)
-Este script funciona como un **microservicio independiente** para extraer y resumir información detallada de páginas de convocatorias.
-
--   **Tecnología**: Se basa en `FastMCP` para crear un servidor de herramientas ligero.
--   **Propósito**: Ofrecer una función (`get_info_convo`) que, dada una URL, extrae no solo el contenido de la página, sino también el texto de cualquier documento PDF enlazado.
--   **Flujo de trabajo interno**:
-    1.  Recibe una URL.
-    2.  Utiliza `requests` y `BeautifulSoup` para descargar y parsear el HTML de la página.
-    3.  Identifica todos los enlaces que apuntan a ficheros PDF.
-    4.  Descarga cada PDF y extrae su contenido de texto usando `PyPDF2`.
-    5.  Combina el texto de la página web y el de los PDFs en un único documento.
-    6.  Envía este documento combinado al modelo de Gemini (`summarise_via_llm`) para obtener un resumen conciso.
-    7.  Devuelve el resumen como resultado.
--   **Ejecución**: Se debe ejecutar en un terminal separado para que esté disponible para la aplicación principal.
-    ```bash
-    python tools/info_convocatoria_mcp.py
-    ```
-
----
-
-## 📈 Organigrama de la Organización de Agentes
-
-El siguiente diagrama muestra el flujo de datos y la interacción entre los componentes clave del sistema, incluyendo la nueva herramienta de scraping.
+   * **ExtractorAgent** → detecta intención y parámetros.
+   * **ApiCallerAgent** → conecta con InfoSubvenciones y el micro-servicio de scraping.
+   * **GeneratorAgent** → produce la respuesta final *streaming*.
+4. **Opik** provee el prompt óptimo para cada agente.
+5. La respuesta se devuelve al navegador mediante **Server-Sent Events (SSE)**.
 
 ```mermaid
-graph TD
-    subgraph "Aplicación Principal (Flask + LangGraph)"
+flowchart TD
+    subgraph Navegador
         U[Usuario]
-        E[ExtractorAgent]
-        A[ApiCallerAgent]
-        G[GeneratorAgent]
-        B[BeneficiariesAgent]
-        H[ErrorHandlerAgent]
     end
-
-    subgraph "Microservicios Externos"
-        MCP[Scraper Service /tools/info_convocatoria_mcp.py]
+    subgraph Backend
+        U --> A[ExtractorAgent]
+        A -->|params| B[ApiCallerAgent]
+        B -->|JSON| C[GeneratorAgent]
+        C -->|stream| U
+        A -->|error| E[ErrorHandlerAgent]
+        B -->|error| E
+        C -->|error| E
     end
+    B --> S((Scraper MCP))
+    subgraph Externos
+        S -->|HTML & PDF| B
+        P((Opik))
+        C <-->|prompt| P
+    end
+```
 
-    U -->|Consulta| E
-    E -->|Parámetros extraídos| A
-    A -->|URL de convocatoria| MCP
-    A -->|API InfoSubvenciones| G
-    MCP -->|Resumen de la convocatoria y PDFs| A
-    A -->|Datos enriquecidos| G
-    G -->|Respuesta parcial| B
-    B -->|Beneficiarios formateados| G
-    G -->|Respuesta final| U
+## Componentes principales
 
-    %% Rutas de errores
-    E -->|Error| H
-    A -->|Error| H
-    MCP -->|Error| H
-    G -->|Error| H
-    H -->|Mensaje de error| U
+| Archivo / Ruta                             | Rol                                       |
+| ------------------------------------------ | ----------------------------------------- |
+| `src/main.py`                              | Servidor Flask + endpoints REST/SSE       |
+| `src/graph/graph.py`                       | Grafo de conversación (LangGraph)         |
+| `src/services/langgraph_service.py`        | Orquestador que monta y ejecuta el grafo  |
+| `src/services/infosubvenciones_service.py` | Cliente para la API InfoSubvenciones      |
+| `src/services/gemini_helpers.py`           | Abstracciones Gemini (modelos, streaming) |
+| `src/agents/*_agent.py`                    | Agentes especializados                    |
+| `src/mcp/info_convocatoria_mcp.py`         | Micro-servicio FastAPI (scraping)         |
+| `src/services/graph_state.py`              | Dataclass compartido entre nodos          |
+
+---
+
+## Ejecución de tests
+
+```bash
+pytest -q
+```
+
+---
+
+## Licencia
+
+Distribuido bajo la licencia [MIT](LICENSE).
+
+---
+
+## Relaciones entre ficheros `.py`
+
+El siguiente diagrama muestra las **dependencias de importación internas** entre los principales módulos del proyecto:
+
+```mermaid
+graph LR
+    %% Relaciones de importación entre módulos (.py)
+    main["main.py"] --> services_gemini_helpers["services/gemini_helpers.py"]
+    main --> services_langgraph_service["services/langgraph_service.py"]
+    main --> services_infosubvenciones_service["services/infosubvenciones_service.py"]
+    graph_graph["graph/graph.py"] --> services_graph_state["services/graph_state.py"]
+    agents_api_caller_agent["agents/api_caller_agent.py"] --> services_graph_state
+    agents_beneficiaries_agent["agents/beneficiaries_agent.py"] --> services_graph_state
+    agents_beneficiaries_agent --> services_infosubvenciones_service
+    agents_political_parties_agent["agents/political_parties_agent.py"] --> services_infosubvenciones_service
+    agents_political_parties_agent --> services_graph_state
+    agents_error_handler_agent["agents/error_handler_agent.py"] --> services_graph_state
+    agents_extractor_agent["agents/extractor_agent.py"] --> services_gemini_helpers
+    agents_extractor_agent --> services_graph_state
+    agents_generator_agent["agents/generator_agent.py"] --> services_graph_state
+    services_langgraph_service --> agents_extractor_agent
+    services_langgraph_service --> agents_beneficiaries_agent
+    services_langgraph_service --> graph_graph
+    services_langgraph_service --> agents_error_handler_agent
+    services_langgraph_service --> agents_api_caller_agent
+    services_langgraph_service --> agents_generator_agent
+    services_langgraph_service --> agents_political_parties_agent
 ```
